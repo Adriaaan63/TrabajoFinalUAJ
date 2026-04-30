@@ -1,0 +1,185 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd29761419510c7469e993b29ea117d8, type: 3}
+  m_Name: DeathmatchItemCollection
+  m_EditorClassIdentifier: 
+  m_Categories:
+  - {fileID: 114688281249701904}
+  - {fileID: 114729592465516552}
+  m_ItemTypes:
+  - {fileID: 114334400771614146}
+  - {fileID: 114399628520483710}
+  - {fileID: 114982450061250758}
+  - {fileID: 114575177125770392}
+  - {fileID: 114074367643677680}
+  - {fileID: 114980215125769966}
+  - {fileID: 114670242716888252}
+  - {fileID: 114099228593570972}
+--- !u!114 &114074367643677680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e74c32144565264eb86dc7514aca7f7, type: 3}
+  m_Name: Grenade
+  m_EditorClassIdentifier: 
+  m_ID: 4
+  m_CategoryIDs: c5986f38
+  m_Capacity: 2147483647
+  m_Prefabs:
+  - {fileID: 742810983791580023, guid: 885534375cbc63b4da4590cc4084228b, type: 3}
+--- !u!114 &114099228593570972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e74c32144565264eb86dc7514aca7f7, type: 3}
+  m_Name: Knife
+  m_EditorClassIdentifier: 
+  m_ID: 7
+  m_CategoryIDs: bfdc8961
+  m_Capacity: 1
+  m_Prefabs:
+  - {fileID: 8352562016125109252, guid: 686db8bcd3fa23444a3f195c44511ab1, type: 3}
+--- !u!114 &114334400771614146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e74c32144565264eb86dc7514aca7f7, type: 3}
+  m_Name: Rifle
+  m_EditorClassIdentifier: 
+  m_ID: 0
+  m_CategoryIDs: bfdc8961
+  m_Capacity: 1
+  m_Prefabs:
+  - {fileID: 8290365586032549518, guid: e523f802a1177cb4097f66e6b3e37415, type: 3}
+--- !u!114 &114399628520483710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e74c32144565264eb86dc7514aca7f7, type: 3}
+  m_Name: RifleBullet
+  m_EditorClassIdentifier: 
+  m_ID: 1
+  m_CategoryIDs: 
+  m_Capacity: 2147483647
+  m_Prefabs: []
+--- !u!114 &114575177125770392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e74c32144565264eb86dc7514aca7f7, type: 3}
+  m_Name: PistolBullet
+  m_EditorClassIdentifier: 
+  m_ID: 3
+  m_CategoryIDs: bf70bfd8
+  m_Capacity: 2147483647
+  m_Prefabs: []
+--- !u!114 &114670242716888252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e74c32144565264eb86dc7514aca7f7, type: 3}
+  m_Name: Rocket
+  m_EditorClassIdentifier: 
+  m_ID: 6
+  m_CategoryIDs: bfdc8961
+  m_Capacity: 2147483647
+  m_Prefabs: []
+--- !u!114 &114688281249701904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ee2c1a75ff367a42ba5f16bd97e5519, type: 3}
+  m_Name: Items
+  m_EditorClassIdentifier: 
+  m_ID: 1636424895
+--- !u!114 &114729592465516552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ee2c1a75ff367a42ba5f16bd97e5519, type: 3}
+  m_Name: Left Hand Grenades
+  m_EditorClassIdentifier: 
+  m_ID: 946837701
+--- !u!114 &114980215125769966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e74c32144565264eb86dc7514aca7f7, type: 3}
+  m_Name: RocketLauncher
+  m_EditorClassIdentifier: 
+  m_ID: 5
+  m_CategoryIDs: bfdc8961
+  m_Capacity: 1
+  m_Prefabs:
+  - {fileID: 651013126195500710, guid: 3c44924793a8d7249bc00996d99acd83, type: 3}
+--- !u!114 &114982450061250758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e74c32144565264eb86dc7514aca7f7, type: 3}
+  m_Name: Pistol
+  m_EditorClassIdentifier: 
+  m_ID: 2
+  m_CategoryIDs: bfdc8961
+  m_Capacity: 2
+  m_Prefabs:
+  - {fileID: 2928401765878035703, guid: b6462e4885ac2254b89f2444135db744, type: 3}

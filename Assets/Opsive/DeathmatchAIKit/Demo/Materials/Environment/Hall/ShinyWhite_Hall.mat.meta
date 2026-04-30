@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: dd86de8c37da67c4d80f6f6599ee97eb
+timeCreated: 1464791667
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Hall/ShinyWhite_Hall.mat
+  uploadId: 560419

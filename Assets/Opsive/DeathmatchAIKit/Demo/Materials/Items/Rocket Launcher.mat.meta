@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 75bdf17085c01e0488d81b854251ee5b
+timeCreated: 1469638900
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Items/Rocket Launcher.mat
+  uploadId: 560419

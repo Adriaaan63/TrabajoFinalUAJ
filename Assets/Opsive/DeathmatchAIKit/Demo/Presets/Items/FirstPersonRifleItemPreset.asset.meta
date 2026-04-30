@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 45f9e75f13b5ccd45b71c09793b9a1c6
+timeCreated: 1501186361
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Presets/Items/FirstPersonRifleItemPreset.asset
+  uploadId: 560419

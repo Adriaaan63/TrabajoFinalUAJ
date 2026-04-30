@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 1a16be6e1dc3491287f34c91a227537e
+timeCreated: 1643379816
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Editor/Controls/Types/CharacterItemActionModuleControl.cs
+  uploadId: 745998

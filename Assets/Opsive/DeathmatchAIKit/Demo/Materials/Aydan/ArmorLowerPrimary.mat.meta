@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2df495cdad422f64b954261caa135a6b
+timeCreated: 1468611009
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Aydan/ArmorLowerPrimary.mat
+  uploadId: 560419

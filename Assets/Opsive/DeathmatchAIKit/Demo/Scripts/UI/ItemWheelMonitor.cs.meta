@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 6c99fe7c4658b8f439590dd16716f916
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Scripts/UI/ItemWheelMonitor.cs
+  uploadId: 560419

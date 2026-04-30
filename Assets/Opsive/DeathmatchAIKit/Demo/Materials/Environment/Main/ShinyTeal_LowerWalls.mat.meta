@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 246fa593c05887a4ba796cf64d2294c5
+timeCreated: 1464979480
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Main/ShinyTeal_LowerWalls.mat
+  uploadId: 560419

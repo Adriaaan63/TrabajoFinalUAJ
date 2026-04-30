@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 348ab891ba7a64e4f829c09d1caee832
+timeCreated: 1464312338
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Scripts/UI/PauseMonitor.cs
+  uploadId: 560419

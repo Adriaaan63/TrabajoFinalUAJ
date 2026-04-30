@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 91027b446a094ea4b93db6b2094da964
+timeCreated: 1619689485
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Runtime/Traits/Damage/DamagePopupMonitor.cs
+  uploadId: 745998

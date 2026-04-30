@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: edb7c3740dc84f98b0f86e45b90b8201
+timeCreated: 1658153030
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Runtime/UI/Inventory/InventoryMonitor.cs
+  uploadId: 745998

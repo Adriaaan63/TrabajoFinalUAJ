@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 249d1633f193e844d9348dc17e62ca7b
+timeCreated: 1464801871
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Prefabs/Environment/HallHalfWall_Corner.prefab
+  uploadId: 560419

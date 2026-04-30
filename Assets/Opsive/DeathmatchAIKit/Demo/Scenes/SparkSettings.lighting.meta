@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: cab022679bc6f8b44a8469c1d09de377
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 4890085278179872738
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Scenes/SparkSettings.lighting
+  uploadId: 560419

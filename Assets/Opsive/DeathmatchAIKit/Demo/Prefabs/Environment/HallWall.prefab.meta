@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6ce520478c1312947845a9b411511a62
+timeCreated: 1452871795
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Prefabs/Environment/HallWall.prefab
+  uploadId: 560419

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f4f4721249f76e94083f64ce9c07391c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Presets/CoverAimPreset.asset
+  uploadId: 560419

@@ -3,4 +3,3 @@
 "*.shader text" 
 "*.cginc text" 
 "*.txt text" 
-Assets/Opsive/DeathmatchAIKit/Demo/Scenes/Spark/LightingData.asset filter=lfs diff=lfs merge=lfs -text

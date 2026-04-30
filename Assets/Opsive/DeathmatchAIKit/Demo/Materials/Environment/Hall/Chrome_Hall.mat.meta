@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: dd850c92b307c9f45b61c57746d66104
+timeCreated: 1464959813
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Hall/Chrome_Hall.mat
+  uploadId: 560419

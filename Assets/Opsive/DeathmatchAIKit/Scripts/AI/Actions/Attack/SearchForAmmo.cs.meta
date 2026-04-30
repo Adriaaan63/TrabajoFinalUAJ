@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 3d7992b987402d24ba0b7df61dc73487
+timeCreated: 1464121498
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Scripts/AI/Actions/Attack/SearchForAmmo.cs
+  uploadId: 560419

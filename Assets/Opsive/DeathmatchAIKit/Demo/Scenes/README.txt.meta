@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: cda82fffb8576e54db7ed1aa94560099
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Scenes/README.txt
+  uploadId: 560419

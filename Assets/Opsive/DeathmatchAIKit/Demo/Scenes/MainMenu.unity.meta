@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 38d5ecf6200fa4541a3d7966af808020
+timeCreated: 1470944569
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Scenes/MainMenu.unity
+  uploadId: 560419

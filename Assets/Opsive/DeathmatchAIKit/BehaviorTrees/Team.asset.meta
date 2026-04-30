@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: daa8dc40e24911648a5c704b9c898a49
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/BehaviorTrees/Team.asset
+  uploadId: 560419

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 4985085cabef19044a8b06f0505c5b5a
+timeCreated: 1470064865
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Items/Rocket.mat
+  uploadId: 560419

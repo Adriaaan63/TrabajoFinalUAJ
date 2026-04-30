@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 00b7f758e16efef42b5ba0ee1ee552c2
+timeCreated: 1464390455
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Prefabs/Game/DeathmatchGame.prefab
+  uploadId: 560419

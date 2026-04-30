@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 3c44924793a8d7249bc00996d99acd83
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Prefabs/Items/RocketLauncherWeapon.prefab
+  uploadId: 560419

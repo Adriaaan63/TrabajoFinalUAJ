@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 639fb7e5742798d49af998bbf558c166
+timeCreated: 1464979939
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Shared/MatteTeal_Doorway.mat
+  uploadId: 560419

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: af8f94be1a0036348a06ef8e074e378c
+timeCreated: 1441154316
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Shared/Smoke.mat
+  uploadId: 560419

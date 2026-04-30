@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a4cc79dc457e8c94ca8aa480b7cc1291
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Inventory/KnifeItemTypeItemSetRules.asset
+  uploadId: 560419

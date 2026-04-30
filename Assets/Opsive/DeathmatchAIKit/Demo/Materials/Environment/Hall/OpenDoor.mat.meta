@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f93378b27c91d764f86a1f1591b9ccaa
+timeCreated: 1471310587
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Hall/OpenDoor.mat
+  uploadId: 560419

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 885534375cbc63b4da4590cc4084228b
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Prefabs/Items/GrenadeWeapon.prefab
+  uploadId: 560419

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 0a5069d8c0ea02947a0ccd441b23a410
+timeCreated: 1464135186
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Scripts/AI/Conditions/Attack/IsAmmoLow.cs
+  uploadId: 560419

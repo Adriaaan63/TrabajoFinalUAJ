@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 67c78056e13bb3444a4f3bbb93824141
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 36300000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Scenes/Spark/OcclusionCullingData.asset
+  uploadId: 560419

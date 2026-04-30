@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bbea235fe450aa34587f8d7e38b77a8f
+timeCreated: 1470337772
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Corner/Emissive_Blue.mat
+  uploadId: 560419

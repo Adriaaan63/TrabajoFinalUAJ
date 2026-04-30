@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 9cbeb90f716d49b887f9ed3cbecaf80c
+timeCreated: 1650282907
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Runtime/Items/Actions/Impact/ImpactActions.cs
+  uploadId: 745998

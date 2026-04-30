@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: b6462e4885ac2254b89f2444135db744
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Prefabs/Items/PistolWeapon.prefab
+  uploadId: 560419

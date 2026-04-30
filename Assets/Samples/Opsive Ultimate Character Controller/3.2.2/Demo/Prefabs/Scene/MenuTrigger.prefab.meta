@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 0fe1da68145f52143b46db30616994ac
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Samples~/Demo/Prefabs/Scene/MenuTrigger.prefab
+  uploadId: 745998

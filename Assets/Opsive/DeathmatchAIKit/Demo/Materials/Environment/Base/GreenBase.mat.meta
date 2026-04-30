@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 03508e257b547494583cb65747ba4095
+timeCreated: 1453776093
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Base/GreenBase.mat
+  uploadId: 560419

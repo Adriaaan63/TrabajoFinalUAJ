@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 2dc4e7e58fc44d46a0efbc2760af2834
+timeCreated: 1657192518
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Editor/Controls/Types/StateObjectBindingGroupControl.cs
+  uploadId: 745998

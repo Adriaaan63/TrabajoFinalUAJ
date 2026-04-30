@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 462762eac7773b848b8d7692dd449a7f
+timeCreated: 1468330157
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/BehaviorTrees/Subtrees/NearGrenade.asset
+  uploadId: 560419

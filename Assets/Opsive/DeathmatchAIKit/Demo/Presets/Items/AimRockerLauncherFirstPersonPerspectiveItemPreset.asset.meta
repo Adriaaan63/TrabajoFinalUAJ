@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 5f7df785946a226489cfe6ae8bb03397
+timeCreated: 1536636716
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Presets/Items/AimRockerLauncherFirstPersonPerspectiveItemPreset.asset
+  uploadId: 560419

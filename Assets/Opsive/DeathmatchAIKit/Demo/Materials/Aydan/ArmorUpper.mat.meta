@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 90ad7b95ed42a0a48a46a35349ab6dcb
+timeCreated: 1468599290
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Aydan/ArmorUpper.mat
+  uploadId: 560419

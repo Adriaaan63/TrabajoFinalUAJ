@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: afbac7ff7d5107345859cf1ee5022438
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Samples~/Demo/Prefabs/Effects/FootprintSandLand.prefab
+  uploadId: 745998

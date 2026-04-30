@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 7c06769d0e1aa9b4886f075e98bdc643
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Scripts/AI/Conditions/Attack/IsNearPowerAmmo.cs
+  uploadId: 560419

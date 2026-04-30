@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 686db8bcd3fa23444a3f195c44511ab1
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Prefabs/Items/KnifeWeapon.prefab
+  uploadId: 560419

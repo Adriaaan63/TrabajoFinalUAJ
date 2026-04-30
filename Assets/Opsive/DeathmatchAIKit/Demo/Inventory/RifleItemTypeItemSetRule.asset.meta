@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 08556c4cb27c5d44f9e3291f1e317a22
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Inventory/RifleItemTypeItemSetRule.asset
+  uploadId: 560419

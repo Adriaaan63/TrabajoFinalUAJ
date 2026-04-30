@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 28bc13e12fef41a4099f07097d7f9612
+timeCreated: 1453773411
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Base/BaseExperimentDivider.mat
+  uploadId: 560419

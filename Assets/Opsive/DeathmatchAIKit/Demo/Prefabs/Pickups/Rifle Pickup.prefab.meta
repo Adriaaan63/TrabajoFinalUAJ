@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f387540282e28f440af176a032039e98
+timeCreated: 1470879545
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Prefabs/Pickups/Rifle Pickup.prefab
+  uploadId: 560419

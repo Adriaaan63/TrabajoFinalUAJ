@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 7140ab220fbf4e4fb8f960099085b1ad
+timeCreated: 1650267717
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Runtime/Items/Actions/Modules/Magic/CastEffects/Teleport.cs
+  uploadId: 745998

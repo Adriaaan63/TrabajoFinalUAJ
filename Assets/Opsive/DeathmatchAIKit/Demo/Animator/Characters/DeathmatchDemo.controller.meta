@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 89f1dd85a7397e046b38ec65fffdd9b0
+timeCreated: 1512604475
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Animator/Characters/DeathmatchDemo.controller
+  uploadId: 560419

@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 30fe08e87eb5416cac4cba8aaf9ff024
+timeCreated: 1645620247
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Runtime/Items/Actions/Modules/Shootable/AmmoModule.cs
+  uploadId: 745998

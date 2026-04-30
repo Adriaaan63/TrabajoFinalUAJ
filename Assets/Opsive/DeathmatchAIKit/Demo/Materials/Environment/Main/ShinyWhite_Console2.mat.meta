@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3a1690932b8fe2b42bca7205e3a38867
+timeCreated: 1465044928
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Main/ShinyWhite_Console2.mat
+  uploadId: 560419

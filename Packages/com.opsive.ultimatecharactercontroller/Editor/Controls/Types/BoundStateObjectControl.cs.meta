@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 722a4d64dc6d44bda9a754f8bf9de9dd
+timeCreated: 1657195158
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Editor/Controls/Types/BoundStateObjectControl.cs
+  uploadId: 745998

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 754967042f1cd814b9b55b6f0f42b427
+timeCreated: 1464208757
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Scripts/AI/Actions/Attack/SpeedChangeMovement.cs
+  uploadId: 560419

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e9a7e09e4f231e243989bc65053cd9f9
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Presets/AimCharacterIKPreset.asset
+  uploadId: 560419

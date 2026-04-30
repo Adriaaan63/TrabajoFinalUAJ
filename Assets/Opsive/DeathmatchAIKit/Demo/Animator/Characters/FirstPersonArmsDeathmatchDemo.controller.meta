@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d85eeebe1c7f3824f81bbaaee11a94e7
+timeCreated: 1494247656
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Animator/Characters/FirstPersonArmsDeathmatchDemo.controller
+  uploadId: 560419

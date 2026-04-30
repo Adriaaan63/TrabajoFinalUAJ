@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 623446b4b665ae84997d7c263a8d5c11
+timeCreated: 1465044481
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Main/MatteWhite_Center.mat
+  uploadId: 560419

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b09468ffb9d95504faed66004739206d
+timeCreated: 1469639340
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Prefabs/Items/ThrownGrenade.prefab
+  uploadId: 560419

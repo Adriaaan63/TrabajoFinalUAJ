@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 21f665b3319596f42b876df77bfa37cc
+timeCreated: 1453775856
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Base/RedBaseOpaque.mat
+  uploadId: 560419

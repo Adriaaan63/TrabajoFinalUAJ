@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 06eab2aaf335cbd40914f449574ee00f
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Presets/CoverUltimateCharacterLocomotionPreset.asset
+  uploadId: 560419

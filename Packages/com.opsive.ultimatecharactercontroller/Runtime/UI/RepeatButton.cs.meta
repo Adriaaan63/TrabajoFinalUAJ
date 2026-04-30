@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 803a0f7e259441d0a561374db0ecebd4
+timeCreated: 1659455737
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Runtime/UI/RepeatButton.cs
+  uploadId: 745998

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 79149abd302c8b040a941e7918653a8c
+timeCreated: 1465569757
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Scripts/AI/Actions/Team/VFormation.cs
+  uploadId: 560419

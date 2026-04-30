@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5eff16deed19b8a4bb96a859230e68f2
+timeCreated: 1454428787
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Control/Emissive.mat
+  uploadId: 560419

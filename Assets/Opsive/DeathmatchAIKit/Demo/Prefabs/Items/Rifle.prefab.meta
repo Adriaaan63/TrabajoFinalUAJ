@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 6c25ed58b4ba98644912d678142b77dc
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Prefabs/Items/Rifle.prefab
+  uploadId: 560419

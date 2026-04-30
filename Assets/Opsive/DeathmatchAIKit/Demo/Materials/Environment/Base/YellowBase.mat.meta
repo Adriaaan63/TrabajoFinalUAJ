@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b364b50993a0dac49ae3464f50ce9b2a
+timeCreated: 1453776066
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Base/YellowBase.mat
+  uploadId: 560419

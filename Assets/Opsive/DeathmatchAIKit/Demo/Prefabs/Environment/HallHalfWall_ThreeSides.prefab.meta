@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 009b945cba1fa644c8b7d1d31140e5a5
+timeCreated: 1452875926
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Prefabs/Environment/HallHalfWall_ThreeSides.prefab
+  uploadId: 560419

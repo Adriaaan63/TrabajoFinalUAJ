@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: f0937d5533f2252499ef8601924319dd
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Prefabs/Game/Aydan.prefab
+  uploadId: 560419

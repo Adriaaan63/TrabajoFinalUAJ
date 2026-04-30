@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 1c4f214e53704fce9a62befdc35bc348
+timeCreated: 1631087155
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Runtime/Character/Abilities/AssistAim.cs
+  uploadId: 745998

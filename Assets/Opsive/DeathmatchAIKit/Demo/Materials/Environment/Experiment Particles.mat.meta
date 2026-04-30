@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: b65f8fa1c591f694a93b06d4a06a5978
+timeCreated: 1471015315
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Experiment
+    Particles.mat
+  uploadId: 560419

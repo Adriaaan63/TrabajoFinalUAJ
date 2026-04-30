@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: d4cf7de5bdfa4a17a9102eea76760efd
+timeCreated: 1646408777
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Runtime/Items/Actions/Modules/Melee/AttackEffectModule.cs
+  uploadId: 745998

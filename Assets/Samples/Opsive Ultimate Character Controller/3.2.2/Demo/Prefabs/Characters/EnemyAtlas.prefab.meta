@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 76ea0246744e89249aab1b31a41d54c4
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Samples~/Demo/Prefabs/Characters/EnemyAtlas.prefab
+  uploadId: 745998

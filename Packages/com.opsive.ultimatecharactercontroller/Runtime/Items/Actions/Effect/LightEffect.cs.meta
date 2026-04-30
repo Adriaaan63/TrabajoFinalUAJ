@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 20c8f4ff008b4f74a541d91d8653cfd9
+timeCreated: 1657200768
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Runtime/Items/Actions/Effect/LightEffect.cs
+  uploadId: 745998

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bf1dc1cf7c3147b41848b4c3c477e834
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Presets/CoverThirdPersonAdventurePreset.asset
+  uploadId: 560419

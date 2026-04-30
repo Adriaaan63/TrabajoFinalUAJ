@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 488114e32627b0241872e2e3911fb53d
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Samples~/Demo/Materials/Items/Shootable/Bullets/BulletDecalWood1.mat
+  uploadId: 745998

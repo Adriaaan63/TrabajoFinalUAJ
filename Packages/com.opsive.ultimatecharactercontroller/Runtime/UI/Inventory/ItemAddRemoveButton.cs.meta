@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 05f5e1807ea84ee890f0acc1d9d66e05
+timeCreated: 1658236772
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Runtime/UI/Inventory/ItemAddRemoveButton.cs
+  uploadId: 745998

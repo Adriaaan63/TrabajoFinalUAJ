@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 022f26f523f541c0b2d82db31f639513
+timeCreated: 1636369878
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Runtime/Inventory/ItemSetGroup.cs
+  uploadId: 745998

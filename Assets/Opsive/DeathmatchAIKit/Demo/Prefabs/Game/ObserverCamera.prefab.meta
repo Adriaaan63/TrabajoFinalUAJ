@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: dd6816f99005db8418f24bc84662508b
+timeCreated: 1473924495
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Prefabs/Game/ObserverCamera.prefab
+  uploadId: 560419

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 15d33c7f4b355084cb981ed6758c5496
+timeCreated: 1471353677
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Hall/ClosedDoor.mat
+  uploadId: 560419

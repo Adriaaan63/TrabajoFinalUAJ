@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: caf04d30bc8d9eb42903806c1530725a
+timeCreated: 1465220465
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Shared/Chrome.mat
+  uploadId: 560419

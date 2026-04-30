@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: 93ef6e19f2d4986489cd37f090456afd
+NativeFormatImporter:
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Samples~/Demo/Materials/Effects/Explosion.mat
+  uploadId: 745998

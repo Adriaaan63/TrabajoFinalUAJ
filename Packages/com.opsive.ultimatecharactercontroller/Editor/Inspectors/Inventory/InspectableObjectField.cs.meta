@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: cfd62b53fcfe4eb983b9bb4955bc503e
+timeCreated: 1637933679
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233712
+  packageName: Third Person Controller
+  packageVersion: 3.2.2
+  assetPath: Packages/com.opsive.ultimatecharactercontroller/Editor/Inspectors/Inventory/InspectableObjectField.cs
+  uploadId: 745998

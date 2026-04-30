@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8c4a2012afe5fd947a6a4774ffedbb68
+timeCreated: 1465045558
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Main/MatteTeal_Console1.mat
+  uploadId: 560419

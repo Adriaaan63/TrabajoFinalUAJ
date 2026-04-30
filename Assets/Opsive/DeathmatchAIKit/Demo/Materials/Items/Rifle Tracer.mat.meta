@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 4b25269d9cc0838439f94a187d75fa8f
+timeCreated: 1471870746
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Items/Rifle Tracer.mat
+  uploadId: 560419

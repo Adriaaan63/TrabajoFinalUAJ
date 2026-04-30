@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ecae6e48fc2c30a4d93eb5b573184d9d
+timeCreated: 1452872326
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Prefabs/Environment/HallDivider.prefab
+  uploadId: 560419

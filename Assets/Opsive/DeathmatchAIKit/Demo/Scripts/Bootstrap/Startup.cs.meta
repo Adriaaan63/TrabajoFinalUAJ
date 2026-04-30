@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 8ffba42252268e242a8521a9ee255f9c
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - m_DeathmatchManagerPrefab: {fileID: 138288, guid: 00b7f758e16efef42b5ba0ee1ee552c2,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Scripts/Bootstrap/Startup.cs
+  uploadId: 560419

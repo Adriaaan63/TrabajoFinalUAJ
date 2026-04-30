@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9e6ebe3b4efa0af409a49937be8e0df7
+timeCreated: 1464978887
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Main/Chrome_LowerWalls.mat
+  uploadId: 560419

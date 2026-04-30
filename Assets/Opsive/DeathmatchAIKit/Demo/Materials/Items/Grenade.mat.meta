@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a048dd5393626114f970b0b0c15fae74
+timeCreated: 1469638915
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Items/Grenade.mat
+  uploadId: 560419

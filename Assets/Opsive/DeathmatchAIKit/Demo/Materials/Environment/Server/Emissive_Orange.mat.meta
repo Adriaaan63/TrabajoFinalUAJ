@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 94cbde4c9335ba64c9ef0138db63f65e
+timeCreated: 1465485195
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Environment/Server/Emissive_Orange.mat
+  uploadId: 560419

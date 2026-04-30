@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ad123aee8d544e44eb0e8188eb4d968a
+timeCreated: 1470880899
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Prefabs/Pickups/Rocket Launcher Pickup.prefab
+  uploadId: 560419

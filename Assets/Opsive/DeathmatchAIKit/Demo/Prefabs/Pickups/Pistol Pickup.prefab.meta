@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8952009274ce62c478d30bcc89dabdeb
+timeCreated: 1470882059
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Prefabs/Pickups/Pistol Pickup.prefab
+  uploadId: 560419

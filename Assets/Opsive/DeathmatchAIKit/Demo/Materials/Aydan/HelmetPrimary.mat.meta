@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c889fe770ff029b409922925353352a0
+timeCreated: 1468611008
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Materials/Aydan/HelmetPrimary.mat
+  uploadId: 560419

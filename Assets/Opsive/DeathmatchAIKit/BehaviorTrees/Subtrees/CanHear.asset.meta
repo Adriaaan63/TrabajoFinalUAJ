@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e31a754c707cfc04fb39d09b9bab87ee
+timeCreated: 1468330227
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/BehaviorTrees/Subtrees/CanHear.asset
+  uploadId: 560419

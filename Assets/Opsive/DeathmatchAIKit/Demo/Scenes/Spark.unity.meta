@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 8a1d6d5db30920f4ba801521d9f5d6b0
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Scenes/Spark.unity
+  uploadId: 560419

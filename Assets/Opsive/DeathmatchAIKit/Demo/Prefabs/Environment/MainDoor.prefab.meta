@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9a56041caec21e44dbee6d1255589f8e
+timeCreated: 1452806688
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 243431
+  packageName: Deathmatch AI Kit
+  packageVersion: 3.0.1
+  assetPath: Assets/Opsive/DeathmatchAIKit/Demo/Prefabs/Environment/MainDoor.prefab
+  uploadId: 560419
