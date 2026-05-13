@@ -476,7 +476,7 @@ namespace Opsive.DeathmatchAIKit.Demo.Game
                 return;
             }
             m_GameOver = true;
-
+            FindObjectOfType<SessionUploader>().UploadAndEnd();
             if (!m_ObserverMode) {
                 EventHandler.ExecuteEvent(m_LocalPlayer, "OnEnableGameplayInput", false);
             }
