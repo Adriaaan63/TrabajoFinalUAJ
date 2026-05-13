@@ -7,169 +7,161 @@ public class TelemetryTracker : MonoBehaviour
 {
     public static TelemetryTracker Instance;
 
-    // Lista guardado eventos
-    private List<Dictionary<string, object>> events = new List<Dictionary<string, object>>();
-
-    // Datos de sesion
+    private List<TelemetryEvent> events = new List<TelemetryEvent>();
     private string sessionId;
-    private string playerId = "Jugador_01"; 
     private float sessionStartTime;
+
+    public string playerId = "Jugador_01";
 
     void Awake()
     {
-      
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        if (Instance == null) { Instance = this; DontDestroyOnLoad(gameObject); }
+        else { Destroy(gameObject); }
     }
 
     void Start()
     {
-        // Generar ID
         sessionId = Guid.NewGuid().ToString();
         sessionStartTime = Time.time;
-
-        // Iniciar  heartbeat
         StartCoroutine(PositionHeartbeat());
-
-        Debug.Log("Telemetría iniciada. Sesión: " + sessionId);
+        Debug.Log("[Telemetría] Sesión iniciada: " + sessionId);
     }
 
+    // ---- Métodos públicos ----
 
     public void RegisterSpawn(string spawnPointId)
     {
-        AddEvent("Player_Spawn", new Dictionary<string, object>
+        events.Add(new TelemetryEvent
         {
-            { "spawn_point_id", spawnPointId }
+            type = "Player_Spawn",
+            t = GetTime(),
+            spawn_point_id = spawnPointId
+        });
+        Debug.Log("[Telemetría] Player_Spawn");
+    }
+
+    public void RegisterPlayerDeath(float x, float z, string killerId)
+    {
+        events.Add(new TelemetryEvent
+        {
+            type = "Player_Death",
+            t = GetTime(),
+            pos_x = x,
+            pos_z = z,
+            killer_id = killerId
+        });
+        Debug.Log("[Telemetría] Player_Death por " + killerId);
+    }
+
+    public void RegisterAIDeath(float x, float z, string killerId)
+    {
+        events.Add(new TelemetryEvent
+        {
+            type = "AI_Death",
+            t = GetTime(),
+            pos_x = x,
+            pos_z = z,
+            killer_id = killerId
+        });
+        Debug.Log("[Telemetría] AI_Death");
+    }
+
+    public void RegisterShotFired(string weapon)
+    {
+        events.Add(new TelemetryEvent
+        {
+            type = "Shot_Fired",
+            t = GetTime(),
+            weapon_used = weapon
         });
     }
 
-    public void RegisterPlayerDeath(float posX, float posZ, string killerId)
+    public void RegisterShotHit(string hitZone)
     {
-        AddEvent("Player_Death", new Dictionary<string, object>
+        events.Add(new TelemetryEvent
         {
-            { "pos_x", posX },
-            { "pos_z", posZ },
-            { "killer_id", killerId }
+            type = "Shot_Hit",
+            t = GetTime(),
+            hit_zone = hitZone
         });
     }
 
-    public void RegisterAIDeath(float posX, float posZ, string killerId)
+    public void RegisterItemPicked(string itemType)
     {
-        AddEvent("AI_Death", new Dictionary<string, object>
+        events.Add(new TelemetryEvent
         {
-            { "pos_x", posX },
-            { "pos_z", posZ },
-            { "killer_id", killerId }
+            type = "Item_Picked",
+            t = GetTime(),
+            item_type = itemType
         });
+        Debug.Log("[Telemetría] Item_Picked: " + itemType);
     }
 
-    public void RegisterShotFired(string weaponName)
-    {
-        AddEvent("Shot_Fired", new Dictionary<string, object>
-        {
-            { "weapon_used", weaponName }
-        });
-    }
+    // ---- Internos ----
 
-    public void RegisterShotHit(string hitZone) // "Body" o "Head"
-    {
-        AddEvent("Shot_Hit", new Dictionary<string, object>
-        {
-            { "hit_zone", hitZone }
-        });
-    }
-
-    public void RegisterItemPicked(string itemType) // "Health", "Weapon", "Ammo"
-    {
-        AddEvent("Item_Picked", new Dictionary<string, object>
-        {
-            { "item_type", itemType }
-        });
-    }
-
-
-    private void AddEvent(string eventType, Dictionary<string, object> attributes)
-    {
-        var newEvent = new Dictionary<string, object>
-        {
-            { "type", eventType },
-            // Tiempo sesión
-            { "t", Time.time - sessionStartTime }
-        };
-
-        
-        foreach (var attr in attributes)
-            newEvent[attr.Key] = attr.Value;
-
-        events.Add(newEvent);
-        Debug.Log($"[Telemetría] Evento registrado: {eventType}");
-    }
+    private float GetTime() => Time.time - sessionStartTime;
 
     private IEnumerator PositionHeartbeat()
     {
-        
-        GameObject player = GameObject.FindWithTag("Player");
-
         while (true)
         {
             yield return new WaitForSeconds(5f);
-
+            GameObject player = GameObject.FindWithTag("Player");
             if (player != null)
             {
                 Vector3 pos = player.transform.position;
-                AddEvent("Player_Position_Heartbeat", new Dictionary<string, object>
+                events.Add(new TelemetryEvent
                 {
-                    { "pos_x", pos.x },
-                    { "pos_z", pos.z }
+                    type = "Player_Position_Heartbeat",
+                    t = GetTime(),
+                    pos_x = pos.x,
+                    pos_z = pos.z
                 });
+                Debug.Log("[Telemetría] Heartbeat registrado");
             }
         }
     }
 
-    // Devuelve el JSON
     public string GetSessionJSON()
     {
-        
-        var session = new Dictionary<string, object>
+        SessionData session = new SessionData
         {
-            { "player_id", playerId },
-            { "match_id", sessionId },
-            { "total_events", events.Count },
-            { "events", events }
+            player_id = playerId,
+            match_id = sessionId,
+            total_events = events.Count,
+            events = events
         };
-
-        return JsonUtility.ToJson(new SerializableSession(session));
+        return JsonUtility.ToJson(session, true);
     }
 }
 
+// ---- Clases de datos serializables ----
+
 [Serializable]
-public class SerializableEvent
+public class TelemetryEvent
 {
     public string type;
     public float t;
+    // Posición (muerte, heartbeat)
     public float pos_x;
     public float pos_z;
+    // Spawn
     public string spawn_point_id;
+    // Muerte
     public string killer_id;
+    // Disparo
     public string weapon_used;
+    // Impacto
     public string hit_zone;
+    // Item
     public string item_type;
 }
 
 [Serializable]
-public class SerializableSession
+public class SessionData
 {
     public string player_id;
     public string match_id;
     public int total_events;
-    public List<SerializableEvent> events;
-
-    public SerializableSession(Dictionary<string, object> data) { /* conversión */ }
+    public List<TelemetryEvent> events;
 }

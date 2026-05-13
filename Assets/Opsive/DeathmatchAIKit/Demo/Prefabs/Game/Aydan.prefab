@@ -1319,7 +1319,7 @@ MonoBehaviour:
   m_MovingStateName: Moving
   m_AirborneStateName: Airborne
   m_MovementTypeFullName: Opsive.UltimateCharacterController.ThirdPersonController.Character.MovementTypes.Combat
-  m_FirstPersonMovementTypeFullName: Opsive.UltimateCharacterController.FirstPersonController.Character.MovementTypes.Combat
+  m_FirstPersonMovementTypeFullName: 
   m_ThirdPersonMovementTypeFullName: Opsive.UltimateCharacterController.ThirdPersonController.Character.MovementTypes.Combat
   m_MovementTypes:
   - rid: 5876176351669256193
