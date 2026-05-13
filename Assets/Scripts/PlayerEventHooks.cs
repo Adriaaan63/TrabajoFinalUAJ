@@ -3,58 +3,30 @@ using Opsive.Shared.Events;
 
 public class PlayerEventHooks : MonoBehaviour
 {
-    // Esta variable nos dice si este script está en el JUGADOR o en una IA
-    [Header("¿Es el jugador humano?")]
-    public bool isHumanPlayer = true;
-
     void Start()
     {
-        // Suscribirse con la firma correcta (3 parámetros)
-        EventHandler.RegisterEvent<Vector3, Vector3, GameObject>(
-            gameObject, "OnDeath", OnDeath);
-
-        EventHandler.RegisterEvent(
-            gameObject, "OnRespawn", OnRespawn);
+        EventHandler.RegisterEvent<Vector3, Vector3, GameObject>(gameObject, "OnDeath", OnPlayerDeath);
+        EventHandler.RegisterEvent(gameObject, "OnRespawn", OnPlayerRespawn);
     }
 
     void OnDestroy()
     {
-        EventHandler.UnregisterEvent<Vector3, Vector3, GameObject>(
-            gameObject, "OnDeath", OnDeath);
-
-        EventHandler.UnregisterEvent(
-            gameObject, "OnRespawn", OnRespawn);
+        EventHandler.UnregisterEvent<Vector3, Vector3, GameObject>(gameObject, "OnDeath", OnPlayerDeath);
+        EventHandler.UnregisterEvent(gameObject, "OnRespawn", OnPlayerRespawn);
     }
 
-    // Ahora la firma tiene los 3 parámetros que Opsive manda
-    private void OnDeath(Vector3 position, Vector3 force, GameObject attacker)
+    private void OnPlayerDeath(Vector3 position, Vector3 force, GameObject attacker)
     {
         if (TelemetryTracker.Instance == null) return;
-
         string killerId = attacker != null ? attacker.name : "Unknown";
-
-        if (isHumanPlayer)
-        {
-            // Murió el jugador
-            TelemetryTracker.Instance.RegisterPlayerDeath(
-                position.x, position.z, killerId);
-        }
-        else
-        {
-            // Murió una IA
-            TelemetryTracker.Instance.RegisterAIDeath(
-                position.x, position.z, killerId);
-        }
+        TelemetryTracker.Instance.RegisterPlayerDeath(position.x, position.z, killerId);
+        Debug.Log("[Telemetría] PLAYER murió. Killer: " + killerId);
     }
 
-    private void OnRespawn()
+    private void OnPlayerRespawn()
     {
         if (TelemetryTracker.Instance == null) return;
-
-        // Solo registramos el spawn del jugador humano
-        if (isHumanPlayer)
-        {
-            TelemetryTracker.Instance.RegisterSpawn(gameObject.name);
-        }
+        TelemetryTracker.Instance.RegisterSpawn(gameObject.name);
+        Debug.Log("[Telemetría] PLAYER respawneado");
     }
 }
