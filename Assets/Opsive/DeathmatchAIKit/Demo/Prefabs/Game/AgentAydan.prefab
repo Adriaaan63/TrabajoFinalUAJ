@@ -3272,8 +3272,7 @@ GameObject:
   - component: {fileID: 5425421391194807020}
   - component: {fileID: 7187428611093170360}
   - component: {fileID: 1912920961617268692}
-  - component: {fileID: -7314530367064102635}
-  - component: {fileID: -759479566927734430}
+  - component: {fileID: 7955141785156719532}
   m_Layer: 31
   m_Name: AgentAydan
   m_TagString: Untagged
@@ -5334,7 +5333,7 @@ MonoBehaviour:
     m_AutoUpdateStartDelay: 1
     m_AutoUpdateInterval: 0.1
     m_AutoUpdateAmount: 0.2
---- !u!114 &-7314530367064102635
+--- !u!114 &7955141785156719532
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5343,20 +5342,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1089649992841513970}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f35de179c0795b43a013edbff934e96, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isHumanPlayer: 1
---- !u!114 &-759479566927734430
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1089649992841513970}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a395c9e9fa27f9747872780a0c5630ab, type: 3}
+  m_Script: {fileID: 11500000, guid: 295f804223998094cb4cfc2cbe1f386c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1089649992841513972

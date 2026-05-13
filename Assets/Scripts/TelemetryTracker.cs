@@ -140,21 +140,15 @@ public class TelemetryTracker : MonoBehaviour
 [Serializable]
 public class TelemetryEvent
 {
-    public string type;
-    public float t;
-    // Posición (muerte, heartbeat)
-    public float pos_x;
-    public float pos_z;
-    // Spawn
-    public string spawn_point_id;
-    // Muerte
-    public string killer_id;
-    // Disparo
-    public string weapon_used;
-    // Impacto
-    public string hit_zone;
-    // Item
-    public string item_type;
+    public string type = "";
+    public float t = 0f;
+    public float pos_x = 0f;
+    public float pos_z = 0f;
+    public string spawn_point_id = "";
+    public string killer_id = "";
+    public string weapon_used = "";
+    public string hit_zone = "";
+    public string item_type = "";
 }
 
 [Serializable]

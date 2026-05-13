@@ -18,7 +18,11 @@ public class PlayerEventHooks : MonoBehaviour
     private void OnPlayerDeath(Vector3 position, Vector3 force, GameObject attacker)
     {
         if (TelemetryTracker.Instance == null) return;
-        string killerId = attacker != null ? attacker.name : "Unknown";
+
+        string killerId = "Unknown";
+        try { killerId = attacker != null ? attacker.name : "Unknown"; }
+        catch { killerId = "Unknown"; }
+
         TelemetryTracker.Instance.RegisterPlayerDeath(position.x, position.z, killerId);
         Debug.Log("[Telemetría] PLAYER murió. Killer: " + killerId);
     }

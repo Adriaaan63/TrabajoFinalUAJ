@@ -1155,7 +1155,8 @@ GameObject:
   - component: {fileID: 780906684689984964}
   - component: {fileID: 1045610391712726734}
   - component: {fileID: 8429593114346865735}
-  - component: {fileID: -969263034410704471}
+  - component: {fileID: -510192793879307322}
+  - component: {fileID: -2437144812923041867}
   m_Layer: 31
   m_Name: Aydan
   m_TagString: Player
@@ -2933,7 +2934,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_PlayerInput: {fileID: 4886010362301128096}
---- !u!114 &-969263034410704471
+--- !u!114 &-510192793879307322
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2942,7 +2943,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 8367314569101908535}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 295f804223998094cb4cfc2cbe1f386c, type: 3}
+  m_Script: {fileID: 11500000, guid: 5f35de179c0795b43a013edbff934e96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-2437144812923041867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8367314569101908535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a395c9e9fa27f9747872780a0c5630ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &8367314569101908537

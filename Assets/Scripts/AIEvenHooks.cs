@@ -22,7 +22,12 @@ public class AIEventHooks : MonoBehaviour
     private void OnAIDeath(Vector3 position, Vector3 force, GameObject attacker)
     {
         if (TelemetryTracker.Instance == null) return;
-        string killerId = attacker != null ? attacker.name : "Unknown";
+
+        // Protección contra null
+        string killerId = "Unknown";
+        try { killerId = attacker != null ? attacker.name : "Unknown"; }
+        catch { killerId = "Unknown"; }
+
         TelemetryTracker.Instance.RegisterAIDeath(position.x, position.z, killerId);
         Debug.Log("[Telemetría] IA muerta. Killer: " + killerId);
     }
@@ -31,14 +36,18 @@ public class AIEventHooks : MonoBehaviour
                                    GameObject attacker, Collider hitCollider)
     {
         if (TelemetryTracker.Instance == null) return;
+        if (attacker == null) return; // <-- esto evita el crash
 
-        // Solo contar si quien daña es el jugador
-        if (attacker != null && attacker.CompareTag("Player"))
+        try
         {
-            string zone = hitCollider != null &&
-                          hitCollider.name.ToLower().Contains("head") ? "Head" : "Body";
-            TelemetryTracker.Instance.RegisterShotHit(zone);
-            Debug.Log("[Telemetría] Shot_Hit en zona: " + zone);
+            if (attacker.CompareTag("Player"))
+            {
+                string zone = hitCollider != null &&
+                              hitCollider.name.ToLower().Contains("head") ? "Head" : "Body";
+                TelemetryTracker.Instance.RegisterShotHit(zone);
+                Debug.Log("[Telemetría] Shot_Hit en zona: " + zone);
+            }
         }
+        catch { /* ignorar si Opsive lanza algo interno */ }
     }
 }
