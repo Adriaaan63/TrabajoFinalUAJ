@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 13565812}
   - component: {fileID: 7849195455354083754}
   - component: {fileID: 3661133599803458121}
+  - component: {fileID: -7357173959942443136}
   m_Layer: 28
   m_Name: Rifle Pickup
   m_TagString: Untagged
@@ -28,12 +29,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 151234}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2.378, y: 8.168, z: 22.342}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3300280
 MeshFilter:
@@ -54,9 +56,15 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -68,6 +76,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -80,6 +89,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!135 &13565812
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -88,9 +98,17 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 151234}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 1
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Radius: 0.9
   m_Center: {x: 0, y: 0.0352385, z: -0.2252905}
 --- !u!114 &7849195455354083754
@@ -109,18 +127,25 @@ MonoBehaviour:
   m_PickupOnTriggerEnter: 1
   m_RotationSpeed: {x: 0, y: 0, z: 0}
   m_PickupAudioClipSet:
-    m_Delay: 0
+    m_AudioConfig: {fileID: 0}
     m_AudioClips: []
   m_PickupMessageText: 
   m_PickupMessageIcon: {fileID: 0}
-  m_ItemPickupSet: []
+  m_OnSelect:
+    m_PersistentCalls:
+      m_Calls: []
+  m_OnDeselect:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DestroyDelay: 0
   m_AlwaysPickup: 0
+  m_Equip: 1
+  m_ItemSetGroup: -1
+  m_ItemSetName: 
   m_ItemDefinitionAmounts:
-  - ItemDefinition: {fileID: 114399628520483710, guid: 5a8464a0315d251498b4b79b69b65e86,
-      type: 2}
+  - ItemDefinition: {fileID: 114399628520483710, guid: 5a8464a0315d251498b4b79b69b65e86, type: 2}
     Amount: 1
-  - ItemDefinition: {fileID: 114334400771614146, guid: 5a8464a0315d251498b4b79b69b65e86,
-      type: 2}
+  - ItemDefinition: {fileID: 114334400771614146, guid: 5a8464a0315d251498b4b79b69b65e86, type: 2}
     Amount: 144
 --- !u!114 &3661133599803458121
 MonoBehaviour:
@@ -146,10 +171,21 @@ MonoBehaviour:
   m_ScheduleRespawnOnDeath: 1
   m_ScheduleRespawnOnDisable: 1
   m_RespawnAudioClipSet:
-    m_Delay: 0
+    m_AudioConfig: {fileID: 0}
     m_AudioClips: []
   m_OnRespawnEvent:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
+--- !u!114 &-7357173959942443136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 151234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55d38f6dc421b7b438fa42edabc4b69d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemType: Rifle
