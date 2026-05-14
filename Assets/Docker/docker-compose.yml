@@ -1,53 +1,30 @@
-services: 
-    # BASE DE DATOS CRUDOS (NoSQL)
-    db-events:
-        image: mongo:latest
-        ports:
-            - "27017:27017"
-        volumes: 
-            - mongo_data:/data/db
-            
-    # BASE DE DATOS PROCESADOS (SQL)
-    db-stats:
-        image: postgres:15
-        environment:
-            POSTGRES_USER: user
-            POSTGRES_PASSWORD: pass
-            POSTGRES_DB: metrics_db
-        ports:
-            - "5432:5432"
-        volumes:
-            - postgres_data:/var/lib/postgresql/data   
-    
-    # COLA DE MENSAJES
+services:
+  # El mensajero temporal (se queda en local)
     redis-server:
         image: redis:alpine
 
-    # API INGESTIÓN (Unity -> Docker)
     ingest-api:
         build: ./ingest_api
         ports:
             - "8000:8000"
+        env_file:
+            - .env
+        command: python main.py  # <--- ESTO MANTIENE EL PROCESO VIVO
         depends_on:
-            - db-events
             - redis-server
 
-    # WORKER DE PYTHON
     metrics-worker:
         build: ./metrics_worker
+        env_file:
+            - .env
+        command: python worker.py # <--- Y AQUÍ TAMBIÉN
         depends_on:
-            - db-events
-            - db-stats
             - redis-server
-    # API CONSULTA (Postgres -> Web)
+
     query-api:
         build: ./query_api
         ports:
             - "8001:8001"
-        depends_on:
-            - db-stats
-
-volumes:
-    mongo_data:
-    postgres_data:
-            
+        env_file:
+            - .env
+        command: python main.py # <--- Y AQUÍ TAMBIÉN
