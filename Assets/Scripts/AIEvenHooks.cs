@@ -34,6 +34,7 @@ public class AIEventHooks : MonoBehaviour
         {
             if (attacker.CompareTag("Player"))
             {
+                Debug.Log($"[TEST] Daño recibido por {gameObject.name}, atacante: {attacker?.name}, tag: {attacker?.tag}");
                 string zone = hitCollider != null &&
                               hitCollider.name.ToLower().Contains("head") ? "Head" : "Body";
                 Tracker.Instance.TrackEvent(new Shot_Hit(zone));
