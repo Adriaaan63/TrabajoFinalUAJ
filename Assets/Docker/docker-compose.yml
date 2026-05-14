@@ -1,0 +1,37 @@
+services: 
+    # BASE DE DATOS CRUDOS (NoSQL)
+    db-events:
+        image: mongo:latest
+        ports:
+            - "27017:27017"
+        volumes: 
+            - mongo_data:/data/db
+            
+    # BASE DE DATOS PROCESADOS (SQL)
+    db-stats:
+        image: postgres:15
+        environment:
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: pass
+            POSTGRES_DB: metrics_db
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data   
+    
+    # COLA DE MENSAJES
+    redis-server:
+        image: redis:alpine
+
+    # WORKER DE PYTHON
+    metrics-worker:
+        build: ./metrics_worker
+        depends_on:
+            - db-events
+            - db-stats
+            - redis-server
+
+volumes:
+    mongo_data:
+    postgres_data:
+            
