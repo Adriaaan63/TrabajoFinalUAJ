@@ -4,13 +4,13 @@ using System.IO;
 using UnityEngine;
 
 /// <summary>
-/// Configuración del sistema de telemetría.
+/// Configuracion del sistema de telemetria.
 /// Se puede cargar desde un fichero JSON (para que sea editable en BUILD
 /// sin recompilar) o usar los valores por defecto del Inspector como fallback.
 ///
 /// Orden de prioridad al cargar:
 ///   1. Fichero JSON junto al ejecutable: {rutaBase}/tracker.config.json
-///   2. Fichero JSON en persistentDataPath:  {persistentDataPath}/tracker.config.json
+///   2. Fichero JSON en persistentDataPath: {persistentDataPath}/tracker.config.json
 ///   3. Valores del Inspector del TrackerInitializer (si no se encuentra fichero).
 /// </summary>
 [Serializable]
@@ -20,59 +20,67 @@ public class TrackerConfig
 
     /// <summary>
     /// Si es false, el tracker no se inicializa y no se recogen eventos.
-    /// Permite desactivar la telemetría por completo desde el config sin tocar código.
+    /// Permite desactivar la telemetria por completo desde el config sin tocar codigo.
     /// </summary>
     public bool enabled = true;
 
     /// <summary>
     /// Si es true, vuelca al Debug.Log cada evento encolado y cada flush.
-    /// Recomendado dejarlo en false en builds de producción para no saturar el log.
+    /// Recomendado dejarlo en false en builds de produccion para no saturar el log.
     /// </summary>
     public bool verboseLogging = false;
 
-    // ---------------- Serialización ----------------
+    // ---------------- Serializacion ----------------
 
-    /// <summary>Formato de serialización: "JSON" o "CSV".</summary>
+    /// <summary>Formato de serializacion: "JSON" o "CSV".</summary>
     public string serializer = "JSON";
 
     // ---------------- Persistencia ----------------
 
-    /// <summary>Destino de las trazas: "LocalFile" o "Firebase".</summary>
+    /// <summary>Destino de las trazas: "LocalFile", "Firebase" o "Docker".</summary>
     public string persistence = "LocalFile";
 
     /// <summary>
-    /// Modo de resolución de la carpeta de salida para LocalFilePersistence:
+    /// Modo de resolucion de la carpeta de salida para LocalFilePersistence:
     ///   - "NextToExe":      carpeta Telemetry/ junto al ejecutable (editor: junto a Assets/).
-    ///                       Más fácil de compartir y de encontrar.
-    ///   - "PersistentData": usa Application.persistentDataPath
-    ///                       (en Windows: %APPDATA%/LocalLow/{company}/{product}).
-    ///   - "Custom":         usa la ruta absoluta definida en `customOutputDir`.
+    ///   - "PersistentData": usa Application.persistentDataPath.
+    ///   - "Custom":         usa la ruta absoluta definida en customOutputDir.
     /// </summary>
     public string localFileOutputMode = "NextToExe";
 
     /// <summary>
-    /// Ruta absoluta personalizada, solo usada si `localFileOutputMode == "Custom"`.
+    /// Ruta absoluta personalizada, solo usada si localFileOutputMode == "Custom".
     /// Si la carpeta no existe, el tracker la crea.
     /// </summary>
     public string customOutputDir = "";
 
     /// <summary>
-    /// Tamaño máximo del archivo de traza en MB antes de rotar a uno nuevo.
-    /// 0 o negativo = sin rotación (un único archivo por sesión, comportamiento clásico).
+    /// Tamano maximo del archivo de traza en MB antes de rotar a uno nuevo.
+    /// 0 o negativo = sin rotacion (un unico archivo por sesion).
+    /// No aplica a Docker ni Firebase.
     /// </summary>
     public float fileRotationMaxMb = 0f;
 
     /// <summary>URL base de la Realtime Database de Firebase (solo si persistence == "Firebase").</summary>
     public string firebaseDatabaseUrl = "";
 
+    // ---------------- Docker ----------------
+
+    /// <summary>
+    /// URL base de la API de ingestion en Docker (solo si persistence == "Docker").
+    /// Ejemplo: "http://localhost:8000"
+    /// El endpoint real sera: {dockerApiUrl}/upload_session
+    /// </summary>
+    public string dockerApiUrl = "http://localhost:8000";
+
     // ---------------- Flush / rendimiento ----------------
 
-    /// <summary>Intervalo en segundos entre flushes automáticos de la cola a disco/red.</summary>
+    /// <summary>Intervalo en segundos entre flushes automaticos de la cola a disco/red.</summary>
     public float autoFlushIntervalSeconds = 30f;
 
     /// <summary>
-    /// Tamaño máximo del buffer interno del FileStream en bytes (4096 por defecto).
-    /// Un buffer más grande reduce I/O al disco pero aumenta la pérdida ante crash.
+    /// Tamano maximo del buffer interno del FileStream en bytes (4096 por defecto).
+    /// Solo aplica a LocalFile. Docker y Firebase gestionan su propio buffer.
     /// </summary>
     public int fileBufferSizeBytes = 4096;
 
@@ -80,23 +88,22 @@ public class TrackerConfig
 
     /// <summary>
     /// Lista de nombres de clase de eventos a IGNORAR.
-    /// Los eventos cuyo `event_type` esté en esta lista se descartan antes de encolarse.
-    /// Ejemplo: ["Player_Attack", "Feather_Recall_Attempt"] para desactivar esos dos.
+    /// Los eventos cuyo event_type este en esta lista se descartan antes de encolarse.
+    /// Ejemplo: ["Player_Attack", "Heartbeat"] para desactivar esos dos.
     /// </summary>
     public List<string> disabledEventTypes = new List<string>();
 
     // ---------------- Carga / guardado ----------------
 
-    /// <summary>Nombre del fichero de configuración que se busca al arrancar.</summary>
+    /// <summary>Nombre del fichero de configuracion que se busca al arrancar.</summary>
     public const string CONFIG_FILE_NAME = "tracker.config.json";
 
     /// <summary>
-    /// Carga la configuración del sistema de ficheros siguiendo el orden de prioridad.
-    /// Devuelve los defaults si no encuentra nada (en cuyo caso `loadedFromPath` queda en null).
+    /// Carga la configuracion del sistema de ficheros siguiendo el orden de prioridad.
+    /// Devuelve null si no encuentra nada (en cuyo caso loadedFromPath queda en null).
     /// </summary>
     public static TrackerConfig Load(out string loadedFromPath)
     {
-        // Prioridad 1: junto al ejecutable
         string nextToExe = Path.Combine(GetDirectoryNextToExe(), CONFIG_FILE_NAME);
         if (File.Exists(nextToExe))
         {
@@ -104,7 +111,6 @@ public class TrackerConfig
             if (cfg != null) { loadedFromPath = nextToExe; return cfg; }
         }
 
-        // Prioridad 2: persistentDataPath
         string persistent = Path.Combine(Application.persistentDataPath, CONFIG_FILE_NAME);
         if (File.Exists(persistent))
         {
@@ -117,10 +123,8 @@ public class TrackerConfig
     }
 
     /// <summary>
-    /// Escribe la configuración actual al fichero `tracker.config.json` junto al
-    /// ejecutable. Útil como herramienta de depuración (se llama desde el
-    /// TrackerInitializer con un botón en el Inspector) para generar una plantilla
-    /// que luego edita el playtester.
+    /// Escribe la configuracion actual al fichero tracker.config.json junto al
+    /// ejecutable. Util como herramienta de depuracion desde el Inspector.
     /// </summary>
     public void SaveToFileNextToExe(out string savedPath)
     {
@@ -146,23 +150,14 @@ public class TrackerConfig
         }
     }
 
-    /// <summary>
-    /// Devuelve la carpeta del ejecutable en build, o la carpeta del proyecto en
-    /// editor (un nivel por encima de Assets/).
-    /// </summary>
     public static string GetDirectoryNextToExe()
     {
-        // Application.dataPath apunta a:
-        //   - En build Windows/Linux/Mac:  {ruta}/{producto}_Data
-        //   - En editor:                   {proyecto}/Assets
-        // Subir un nivel nos deja junto al ejecutable (o en la raíz del proyecto).
-        string dataPath = Application.dataPath;
-        return Path.GetFullPath(Path.Combine(dataPath, ".."));
+        return Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
     }
 
     /// <summary>
-    /// Resuelve a ruta absoluta la carpeta de salida según el modo configurado.
-    /// Crea la carpeta si no existe.
+    /// Resuelve a ruta absoluta la carpeta de salida segun el modo configurado.
+    /// Crea la carpeta si no existe. Solo relevante para LocalFile.
     /// </summary>
     public string ResolveLocalOutputDir()
     {
@@ -175,7 +170,7 @@ public class TrackerConfig
             case "Custom":
                 if (string.IsNullOrWhiteSpace(customOutputDir))
                 {
-                    Debug.LogWarning("[TrackerConfig] customOutputDir está vacío, "
+                    Debug.LogWarning("[TrackerConfig] customOutputDir esta vacio, "
                                      + "usando NextToExe como fallback.");
                     dir = Path.Combine(GetDirectoryNextToExe(), "Telemetry");
                 }

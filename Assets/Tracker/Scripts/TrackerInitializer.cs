@@ -2,24 +2,27 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Bootstrap del sistema de telemetría. Se ejecuta al arranque y decide
-/// cómo configurar el Tracker basándose en:
+/// Bootstrap del sistema de telemetria. Se ejecuta al arranque y decide
+/// como configurar el Tracker basandose en:
 ///
-///   1. Un fichero `tracker.config.json` si existe (junto al ejecutable o
+///   1. Un fichero tracker.config.json si existe (junto al ejecutable o
 ///      en persistentDataPath). Permite al playtester cambiar la
-///      configuración de una build SIN recompilar.
+///      configuracion de una build SIN recompilar.
 ///
 ///   2. En su defecto, los valores que tengas puestos en el Inspector
-///      (equivalente a la configuración anterior, retrocompatible).
+///      (equivalente a la configuracion anterior, retrocompatible).
 ///
-/// En el editor, el botón contextual "Generate config file next to exe"
+/// En el editor, el boton contextual "Generate config file next to exe"
 /// vuelca los valores actuales del Inspector a un fichero JSON que luego
 /// puedes distribuir junto con la build.
 /// </summary>
 public class TrackerInitializer : MonoBehaviour
 {
-    public enum S_type { JSON, CSV };
-    public enum P_type { LOCAL_FILE, FIREBASE }
+    public enum S_type { JSON, CSV }
+
+    // DOCKER agregado como nueva opcion de persistencia
+    public enum P_type { LOCAL_FILE, FIREBASE, DOCKER }
+
     public enum OutputMode { NextToExe, PersistentData, Custom }
 
     [Header("--- Fallback (usado si NO existe tracker.config.json) ---")]
@@ -28,103 +31,122 @@ public class TrackerInitializer : MonoBehaviour
     public bool enabled = true;
     public bool verboseLogging = false;
 
-    [Header("Serialización y persistencia")]
+    [Header("Serializacion y persistencia")]
     public S_type serializerType = S_type.JSON;
     public P_type persistanceType = P_type.LOCAL_FILE;
 
     [Header("Salida de ficheros locales")]
-    [Tooltip("Dónde guardar los .json/.csv de telemetría.\n"
-             + "• NextToExe: carpeta Telemetry/ junto al ejecutable (recomendado).\n"
-             + "• PersistentData: %APPDATA%/LocalLow/... (comportamiento antiguo).\n"
-             + "• Custom: la ruta que escribas en 'customOutputDir'.")]
+    [Tooltip("Solo aplica si persistenceType = LOCAL_FILE.\n"
+             + "NextToExe: carpeta Telemetry/ junto al ejecutable (recomendado).\n"
+             + "PersistentData: %APPDATA%/LocalLow/...\n"
+             + "Custom: la ruta que escribas en 'customOutputDir'.")]
     public OutputMode localFileOutputMode = OutputMode.NextToExe;
 
     [Tooltip("Solo usado si localFileOutputMode = Custom")]
     public string customOutputDir = "";
 
-    [Tooltip("Tamaño máximo por archivo en MB antes de rotar (0 = sin rotación).")]
+    [Tooltip("Tamano maximo por archivo en MB antes de rotar (0 = sin rotacion).")]
     public float fileRotationMaxMb = 0f;
 
     [Header("Servidor Firebase (si persistencia = FIREBASE)")]
     public string firebaseDatabaseUrl =
         "https://featherrise-telemetry-p3-default-rtdb.europe-west1.firebasedatabase.app/";
 
+    [Header("API Docker (si persistencia = DOCKER)")]
+    [Tooltip("URL base del contenedor Docker con la API de ingestion.\n"
+             + "Ejemplo: http://localhost:8000\n"
+             + "El tracker llamara a {dockerApiUrl}/upload_session al cerrar la sesion.")]
+    public string dockerApiUrl = "http://localhost:8000";
+
     [Header("Rendimiento")]
-    [Tooltip("Intervalo en segundos entre flushes automáticos.")]
+    [Tooltip("Intervalo en segundos entre flushes automaticos.\n"
+             + "En modo Docker los flushes intermedios acumulan en memoria; "
+             + "el envio real ocurre al cerrar la aplicacion.")]
     public float autoFlushIntervalSeconds = 30f;
 
-    [Tooltip("Buffer interno del FileStream en bytes.")]
+    [Tooltip("Buffer interno del FileStream en bytes. Solo aplica a LOCAL_FILE.")]
     public int fileBufferSizeBytes = 4096;
 
     [Header("Eventos desactivados")]
-    [Tooltip("Nombres de clase de eventos que NO se registrarán (ej: Player_Attack).")]
+    [Tooltip("Nombres de clase de eventos que NO se registraran (ej: Player_Attack).")]
     public List<string> disabledEventTypes = new List<string>();
 
     // ---------------------- ciclo de vida ----------------------
 
     void Start()
     {
-        // 1. Cargar configuración
+        // 1. Cargar configuracion
         TrackerConfig config = TrackerConfig.Load(out string loadedPath);
         if (config == null)
         {
             config = BuildConfigFromInspector();
-            Debug.Log("[TrackerInitializer] No se encontró tracker.config.json, "
+            Debug.Log("[TrackerInitializer] No se encontro tracker.config.json, "
                       + "usando valores del Inspector.");
         }
         else
         {
-            Debug.Log($"[TrackerInitializer] Configuración cargada desde: {loadedPath}");
+            Debug.Log($"[TrackerInitializer] Configuracion cargada desde: {loadedPath}");
         }
 
-        // 2. Si el tracker está desactivado, no construimos dependencias
+        // 2. Si el tracker esta desactivado, no construimos dependencias
         if (!config.enabled)
         {
             Tracker.Instance.Init(null, null, "", config);
             return;
         }
 
-        // 3. Construir serializador y persistencia según config
+        // 3. Construir serializador y persistencia segun config
         string sessionId = System.Guid.NewGuid().ToString();
-        string fileExtension;
-        ISerializer ser = ChooseSerializer(config, out fileExtension);
+        ISerializer ser = ChooseSerializer(config, out string fileExtension);
         IPersistence pers = ChoosePersistence(config, sessionId, fileExtension);
 
-        // 4. Transferir el intervalo al Tracker vía config (ya está en él,
-        //    pero el Tracker.autoFlushInterval viejo ya no se usa)
         Tracker.Instance.Init(ser, pers, sessionId, config);
     }
 
     /// <summary>
     /// Copia los valores del Inspector a una instancia de TrackerConfig.
-    /// Usado como fallback cuando no hay fichero de configuración.
+    /// Usado como fallback cuando no hay fichero de configuracion.
     /// </summary>
     private TrackerConfig BuildConfigFromInspector()
     {
+        string persistenceStr = persistanceType switch
+        {
+            P_type.FIREBASE => "Firebase",
+            P_type.DOCKER   => "Docker",
+            _               => "LocalFile",
+        };
+
         return new TrackerConfig
         {
-            enabled = enabled,
-            verboseLogging = verboseLogging,
-            serializer = serializerType.ToString(),
-            persistence = persistanceType == P_type.LOCAL_FILE ? "LocalFile" : "Firebase",
-            localFileOutputMode = localFileOutputMode.ToString(),
-            customOutputDir = customOutputDir,
-            fileRotationMaxMb = fileRotationMaxMb,
-            firebaseDatabaseUrl = firebaseDatabaseUrl,
+            enabled                  = enabled,
+            verboseLogging           = verboseLogging,
+            serializer               = serializerType.ToString(),
+            persistence              = persistenceStr,
+            localFileOutputMode      = localFileOutputMode.ToString(),
+            customOutputDir          = customOutputDir,
+            fileRotationMaxMb        = fileRotationMaxMb,
+            firebaseDatabaseUrl      = firebaseDatabaseUrl,
+            dockerApiUrl             = dockerApiUrl,
             autoFlushIntervalSeconds = autoFlushIntervalSeconds,
-            fileBufferSizeBytes = fileBufferSizeBytes,
-            disabledEventTypes = new List<string>(disabledEventTypes ?? new List<string>()),
+            fileBufferSizeBytes      = fileBufferSizeBytes,
+            disabledEventTypes       = new List<string>(disabledEventTypes ?? new List<string>()),
         };
     }
 
     private ISerializer ChooseSerializer(TrackerConfig cfg, out string extension)
     {
-        // Firebase siempre usa su propio serializador (el JSON plano de
-        // Firebase Realtime DB, sin comas entre batches).
+        // Firebase usa su propio serializador independientemente del campo serializer
         if (cfg.persistence == "Firebase")
         {
-            extension = ".json"; // no se usa realmente
+            extension = ".json";
             return new FirebaseSerializer();
+        }
+
+        // Docker siempre usa JSON (la API espera JSON)
+        if (cfg.persistence == "Docker")
+        {
+            extension = ".json";
+            return new JSONSerializer();
         }
 
         switch (cfg.serializer?.ToUpperInvariant())
@@ -142,18 +164,27 @@ public class TrackerInitializer : MonoBehaviour
     private IPersistence ChoosePersistence(TrackerConfig cfg, string sessionId,
                                            string extension)
     {
-        if (cfg.persistence == "Firebase")
+        switch (cfg.persistence)
         {
-            if (string.IsNullOrWhiteSpace(cfg.firebaseDatabaseUrl))
-            {
-                Debug.LogWarning("[TrackerInitializer] Firebase URL vacía, cayendo a LocalFile.");
-            }
-            else
-            {
+            case "Firebase":
+                if (string.IsNullOrWhiteSpace(cfg.firebaseDatabaseUrl))
+                {
+                    Debug.LogWarning("[TrackerInitializer] Firebase URL vacia, cayendo a LocalFile.");
+                    break;
+                }
                 return new FirebasePersistence(cfg.firebaseDatabaseUrl, sessionId);
-            }
+
+            case "Docker":
+                if (string.IsNullOrWhiteSpace(cfg.dockerApiUrl))
+                {
+                    Debug.LogWarning("[TrackerInitializer] dockerApiUrl vacia, cayendo a LocalFile.");
+                    break;
+                }
+                Debug.Log($"[TrackerInitializer] Persistencia Docker -> {cfg.dockerApiUrl}/upload_session");
+                return new DockerPersistence(cfg.dockerApiUrl, sessionId);
         }
 
+        // LOCAL_FILE (default y fallback)
         string outDir = cfg.ResolveLocalOutputDir();
         Debug.Log($"[TrackerInitializer] Trazas locales en: {outDir}");
         return new LocalFilePersistence(outDir, sessionId, extension,
@@ -170,6 +201,6 @@ public class TrackerInitializer : MonoBehaviour
         cfg.SaveToFileNextToExe(out string savedPath);
         Debug.Log($"[TrackerInitializer] Config escrito en: {savedPath}\n"
                   + "Puedes distribuir este fichero junto con la build. El usuario "
-                  + "podrá editarlo para cambiar la configuración sin recompilar.");
+                  + "podra editarlo para cambiar la configuracion sin recompilar.");
     }
 }
