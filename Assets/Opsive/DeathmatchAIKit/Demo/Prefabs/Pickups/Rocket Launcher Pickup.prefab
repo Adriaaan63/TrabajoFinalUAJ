@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 13500000}
   - component: {fileID: 4737569647637570999}
   - component: {fileID: 6856333541946431401}
-  - component: {fileID: 2881552127816837669}
+  - component: {fileID: 5431417251742477772}
   m_Layer: 28
   m_Name: Rocket Launcher Pickup
   m_TagString: Untagged
@@ -176,7 +176,7 @@ MonoBehaviour:
   m_OnRespawnEvent:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &2881552127816837669
+--- !u!114 &5431417251742477772
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

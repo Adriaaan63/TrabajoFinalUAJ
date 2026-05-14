@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 13501822}
   - component: {fileID: 6609405706291340001}
   - component: {fileID: 1693264264044446477}
-  - component: {fileID: -3293269477328610984}
+  - component: {fileID: 1804864530752527802}
   m_Layer: 28
   m_Name: Pistol Pickup
   m_TagString: Untagged
@@ -176,7 +176,7 @@ MonoBehaviour:
   m_OnRespawnEvent:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &-3293269477328610984
+--- !u!114 &1804864530752527802
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
