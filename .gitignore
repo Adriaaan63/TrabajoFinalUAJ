@@ -105,4 +105,6 @@ InitTestScene*.unity*
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
 
-/[Aa]ssets/Opsive/DeathmatchAIKit/Demo/Scenes/Spark/LightingData.asset
+#/[Aa]ssets/Opsive/DeathmatchAIKit/Demo/Scenes/Spark/LightingData.asset
+#Ignorar el puto archivo de los cojones
+**/LightningData.asset
