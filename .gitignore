@@ -107,4 +107,5 @@ InitTestScene*.unity*
 
 #/[Aa]ssets/Opsive/DeathmatchAIKit/Demo/Scenes/Spark/LightingData.asset
 #Ignorar el puto archivo de los cojones
-**/LightningData.asset
+**/LightingData.asset
+**/LightingData.asset.meta
