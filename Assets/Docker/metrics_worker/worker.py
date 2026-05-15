@@ -3,8 +3,7 @@
 Flujo:
   Redis(sessions_to_process) -> MongoDB(raw_events) -> PostgreSQL(metricas)
 
-Este worker procesa sesiones completas generadas por DockerPersistence.cs y
-escribe el contrato que consume la Query API:
+Escribe el contrato que consume la Query API:
   - player_stats
   - session_stats
   - death_events
@@ -40,7 +39,6 @@ REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
 REDIS_DB = int(os.getenv("REDIS_DB", "0"))
 REDIS_QUEUE_KEY = os.getenv("REDIS_QUEUE_KEY", "sessions_to_process")
 
-# Nombres por defecto generados desde clases C# TrackerEvent.
 EVENT_KILL = os.getenv("EVENT_KILL", "Player_Kill")
 EVENT_DEATH = os.getenv("EVENT_DEATH", "Player_Death")
 EVENT_SHOT = os.getenv("EVENT_SHOT", "Player_Shot")
@@ -73,9 +71,8 @@ redis_client = redis.Redis(
     decode_responses=True,
 )
 
-
 # ---------------------------------------------------------------------------
-# DDL: contrato PostgreSQL esperado por query_api
+# DDL PostgreSQL
 # ---------------------------------------------------------------------------
 
 SCHEMA_SQL = """
@@ -153,7 +150,6 @@ CREATE INDEX IF NOT EXISTS idx_item_player ON item_events (player_id);
 CREATE INDEX IF NOT EXISTS idx_item_type   ON item_events (item_type);
 """
 
-# Compatibilidad si ya existe una player_stats antigua del prototipo.
 MIGRATIONS_SQL = """
 ALTER TABLE player_stats ADD COLUMN IF NOT EXISTS kd_ratio NUMERIC(10,4) NOT NULL DEFAULT 0;
 ALTER TABLE player_stats ADD COLUMN IF NOT EXISTS avg_ttl_seconds NUMERIC(8,2) NOT NULL DEFAULT 0;
@@ -163,9 +159,8 @@ ALTER TABLE player_stats ADD COLUMN IF NOT EXISTS items_picked INTEGER NOT NULL 
 ALTER TABLE player_stats ADD COLUMN IF NOT EXISTS last_updated TIMESTAMPTZ NOT NULL DEFAULT NOW();
 """
 
-
 # ---------------------------------------------------------------------------
-# Helpers generales
+# Helpers
 # ---------------------------------------------------------------------------
 
 def retry_with_backoff(
@@ -186,12 +181,24 @@ def retry_with_backoff(
             if attempt >= max_attempts:
                 print(f"[worker] {label} fallo tras {attempt} intentos: {exc}")
                 raise
+            detail = getattr(exc, "orig", exc)
             print(
                 f"[worker] {label} intento {attempt}/{max_attempts} fallido "
-                f"({type(exc).__name__}). Reintento en {delay:.1f}s..."
+                f"({type(exc).__name__}: {detail}). Reintento en {delay:.1f}s..."
             )
             time.sleep(delay)
             delay = min(delay * 2, max_delay)
+
+
+def flatten_events(raw: Any) -> list[dict[str, Any]]:
+    """Acepta eventos como dict, lista de dicts o listas anidadas."""
+    flat: list[dict[str, Any]] = []
+    if isinstance(raw, dict):
+        flat.append(raw)
+    elif isinstance(raw, list):
+        for item in raw:
+            flat.extend(flatten_events(item))
+    return flat
 
 
 def event_type(event: dict[str, Any]) -> str:
@@ -199,13 +206,11 @@ def event_type(event: dict[str, Any]) -> str:
 
 
 def parse_time(value: Any) -> datetime | None:
-    """Acepta epoch seconds/ms o ISO string. Devuelve datetime UTC."""
     if value is None:
         return None
     if isinstance(value, datetime):
         return value if value.tzinfo else value.replace(tzinfo=timezone.utc)
     if isinstance(value, (int, float)):
-        # Heuristica: > 1e12 suele ser epoch en milisegundos.
         seconds = value / 1000.0 if value > 1_000_000_000_000 else float(value)
         return datetime.fromtimestamp(seconds, tz=timezone.utc)
     if isinstance(value, str):
@@ -221,7 +226,9 @@ def parse_time(value: Any) -> datetime | None:
     return None
 
 
-def get_event_time(event: dict[str, Any], fallback: datetime) -> datetime:
+def get_event_time(event: dict[str, Any] | None, fallback: datetime) -> datetime:
+    if not event:
+        return fallback
     return (
         parse_time(event.get("timestamp"))
         or parse_time(event.get("t"))
@@ -237,7 +244,6 @@ def seconds_between(a: datetime | None, b: datetime | None) -> int:
 
 
 def get_pos(event: dict[str, Any]) -> tuple[float | None, float | None, int | None]:
-    """Extrae X/Z/floor desde formatos comunes de Unity."""
     pos_x = event.get("pos_x", event.get("x"))
     pos_z = event.get("pos_z", event.get("z"))
     floor_id = event.get("floor_id", event.get("floor"))
@@ -280,7 +286,6 @@ def bool_from_event(value: Any) -> bool:
 def avg(values: list[float]) -> float:
     return round(sum(values) / len(values), 2) if values else 0.0
 
-
 # ---------------------------------------------------------------------------
 # Schema
 # ---------------------------------------------------------------------------
@@ -295,13 +300,12 @@ def ensure_schema() -> None:
     retry_with_backoff(_do, label="ensure_schema")
     print("[worker] Esquema PostgreSQL listo.")
 
-
 # ---------------------------------------------------------------------------
-# Procesamiento de una sesion
+# Procesamiento
 # ---------------------------------------------------------------------------
 
 def build_session_metrics(session: dict[str, Any]) -> dict[str, Any]:
-    events: list[dict[str, Any]] = session.get("events") or []
+    events = flatten_events(session.get("events") or [])
     now = datetime.now(timezone.utc)
 
     session_id = str(session.get("session_id") or session.get("match_id") or session.get("_id"))[:64]
@@ -354,7 +358,6 @@ def build_session_metrics(session: dict[str, Any]) -> dict[str, Any]:
             if ttl_seconds is not None:
                 ttl_values.append(ttl_seconds)
 
-            # Si no hay coordenadas, no rompemos el agregado; solo omitimos el punto del heatmap.
             if pos_x is not None and pos_z is not None:
                 death_rows.append({
                     "session_id": session_id,
@@ -412,7 +415,12 @@ def build_session_metrics(session: dict[str, Any]) -> dict[str, Any]:
 
 
 def write_metrics(metrics: dict[str, Any]) -> None:
-    """Escribe una sesion de forma atomica en PostgreSQL."""
+    player_stub = text("""
+        INSERT INTO player_stats (player_id)
+        VALUES (:player_id)
+        ON CONFLICT (player_id) DO NOTHING;
+    """)
+
     player_upsert = text("""
         INSERT INTO player_stats (
             player_id, total_kills, total_deaths, kd_ratio, avg_accuracy,
@@ -439,13 +447,17 @@ def write_metrics(metrics: dict[str, Any]) -> None:
                 )
             END,
             avg_accuracy = ROUND(
-                ((player_stats.avg_accuracy * player_stats.total_sessions) + EXCLUDED.avg_accuracy) /
-                NULLIF(player_stats.total_sessions + 1, 0),
+                (
+                    ((player_stats.avg_accuracy::NUMERIC * player_stats.total_sessions) + EXCLUDED.avg_accuracy::NUMERIC) /
+                    NULLIF(player_stats.total_sessions + 1, 0)
+                )::NUMERIC,
                 4
             ),
             avg_ttl_seconds = ROUND(
-                ((player_stats.avg_ttl_seconds * player_stats.total_sessions) + EXCLUDED.avg_ttl_seconds) /
-                NULLIF(player_stats.total_sessions + 1, 0),
+                (
+                    ((player_stats.avg_ttl_seconds::NUMERIC * player_stats.total_sessions) + EXCLUDED.avg_ttl_seconds::NUMERIC) /
+                    NULLIF(player_stats.total_sessions + 1, 0)
+                )::NUMERIC,
                 2
             ),
             last_updated = NOW();
@@ -490,11 +502,17 @@ def write_metrics(metrics: dict[str, Any]) -> None:
 
     def _do() -> bool:
         with pg_engine.begin() as conn:
+            # Primero garantizamos que existe player_stats para que session_stats no rompa la FK.
+            # Esta fila minima no suma metricas.
+            conn.execute(player_stub, {"player_id": metrics["player_id"]})
+
+            # Si la sesion ya existe, salimos sin volver a sumar ni duplicar eventos.
             result = conn.execute(session_upsert, metrics)
             if result.rowcount == 0:
                 print(f"[worker] Sesion {metrics['session_id']} ya existe en session_stats; no se duplica.")
                 return True
 
+            # Solo si la sesion es nueva acumulamos metricas del jugador y guardamos eventos.
             conn.execute(player_upsert, metrics)
             if metrics["death_rows"]:
                 conn.execute(insert_death, metrics["death_rows"])
@@ -543,7 +561,6 @@ def process_session(mongo_id: str) -> None:
 
 
 def recover_unprocessed(limit: int = 100) -> int:
-    """Recupera sesiones pendientes si Redis se vacio al reiniciar Docker."""
     count = 0
     cursor = events_col.find({"processed": {"$ne": True}}, {"_id": 1}).limit(limit)
     for doc in cursor:
@@ -553,9 +570,8 @@ def recover_unprocessed(limit: int = 100) -> int:
         print(f"[worker] Recuperadas {count} sesiones pendientes hacia Redis.")
     return count
 
-
 # ---------------------------------------------------------------------------
-# Main loop
+# Main
 # ---------------------------------------------------------------------------
 
 def main() -> None:
@@ -566,7 +582,6 @@ def main() -> None:
     time.sleep(2)
     ensure_schema()
 
-    # Mitiga la limitacion conocida de Redis sin persistencia.
     try:
         recover_unprocessed()
     except Exception as exc:
