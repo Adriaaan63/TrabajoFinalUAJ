@@ -1,6 +1,6 @@
-FROM python:3.9-slim
+FROM python:3.11-slim
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-# Este CMD es un placeholder, lo sobreescribiremos por seguridad
