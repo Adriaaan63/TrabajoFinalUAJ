@@ -5,6 +5,8 @@ from fastapi import FastAPI, Request, HTTPException
 from pymongo import MongoClient
 import datetime
 
+# Ingest API -> web - http://localhost:8000/docs
+
 app = FastAPI()
 
 # --- Conexiones ---

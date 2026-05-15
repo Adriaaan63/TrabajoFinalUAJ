@@ -2,6 +2,8 @@ import os
 from fastapi import FastAPI
 from sqlalchemy import create_engine, text
 
+# Query API -> web - http://localhost:8001/docs
+
 app = FastAPI()
 
 # Leemos la URL de Postgres en la nube
