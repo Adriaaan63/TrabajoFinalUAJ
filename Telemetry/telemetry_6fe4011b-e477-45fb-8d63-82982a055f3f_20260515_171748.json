@@ -1,0 +1,24 @@
+[
+  [
+    {"timestamp":1778858270,"session_id":"6fe4011b-e477-45fb-8d63-82982a055f3f","event_type":"Item_Picked","item_type":"Rocket"},
+    {"timestamp":1778858271,"session_id":"6fe4011b-e477-45fb-8d63-82982a055f3f","event_type":"AI_Death","pos_x":29.724668502807618,"pos_z":-0.031688690185546878,"killer_id":"Eryx"},
+    {"timestamp":1778858273,"session_id":"6fe4011b-e477-45fb-8d63-82982a055f3f","event_type":"Shot_Fired","weapon_used":"ShootableAction"},
+    {"timestamp":1778858273,"session_id":"6fe4011b-e477-45fb-8d63-82982a055f3f","event_type":"AI_Death","pos_x":-11.806048393249512,"pos_z":-1.5623483657836915,"killer_id":"Ace"},
+    {"timestamp":1778858273,"session_id":"6fe4011b-e477-45fb-8d63-82982a055f3f","event_type":"Shot_Fired","weapon_used":"ShootableAction"},
+    {"timestamp":1778858273,"session_id":"6fe4011b-e477-45fb-8d63-82982a055f3f","event_type":"Shot_Fired","weapon_used":"ShootableAction"},
+    {"timestamp":1778858273,"session_id":"6fe4011b-e477-45fb-8d63-82982a055f3f","event_type":"Shot_Fired","weapon_used":"ShootableAction"},
+    {"timestamp":1778858273,"session_id":"6fe4011b-e477-45fb-8d63-82982a055f3f","event_type":"Shot_Fired","weapon_used":"ShootableAction"},
+    {"timestamp":1778858273,"session_id":"6fe4011b-e477-45fb-8d63-82982a055f3f","event_type":"Shot_Fired","weapon_used":"ShootableAction"},
+    {"timestamp":1778858273,"session_id":"6fe4011b-e477-45fb-8d63-82982a055f3f","event_type":"Shot_Fired","weapon_used":"ShootableAction"},
+    {"timestamp":1778858273,"session_id":"6fe4011b-e477-45fb-8d63-82982a055f3f","event_type":"Shot_Fired","weapon_used":"ShootableAction"},
+    {"timestamp":1778858274,"session_id":"6fe4011b-e477-45fb-8d63-82982a055f3f","event_type":"Shot_Fired","weapon_used":"ShootableAction"},
+    {"timestamp":1778858274,"session_id":"6fe4011b-e477-45fb-8d63-82982a055f3f","event_type":"Player_Position_Heartbeat","pos_x":-9.301573753356934,"pos_z":-1.9585243463516236},
+    {"timestamp":1778858277,"session_id":"6fe4011b-e477-45fb-8d63-82982a055f3f","event_type":"Player_Death","pos_x":-27.521724700927736,"pos_z":-9.24061393737793,"killer_id":"Adonis"},
+    {"timestamp":1778858278,"session_id":"6fe4011b-e477-45fb-8d63-82982a055f3f","event_type":"AI_Death","pos_x":-2.4960851669311525,"pos_z":11.2986421585083,"killer_id":"Eryx"},
+    {"timestamp":1778858279,"session_id":"6fe4011b-e477-45fb-8d63-82982a055f3f","event_type":"Player_Position_Heartbeat","pos_x":-26.829389572143556,"pos_z":-8.636695861816407},
+    {"timestamp":1778858279,"session_id":"6fe4011b-e477-45fb-8d63-82982a055f3f","event_type":"Player_Spawn","spawn_point_id":"x:27,0_z:0,0"}
+  ],
+  [
+    {"timestamp":1778858280,"session_id":"6fe4011b-e477-45fb-8d63-82982a055f3f","event_type":"Session_End"}
+  ]
+]

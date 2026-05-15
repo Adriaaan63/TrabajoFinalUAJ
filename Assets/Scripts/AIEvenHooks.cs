@@ -7,14 +7,14 @@ public class AIEventHooks : MonoBehaviour
     {
         EventHandler.RegisterEvent<Vector3, Vector3, GameObject>(gameObject, "OnDeath", OnAIDeath);
         EventHandler.RegisterEvent<float, Vector3, Vector3, GameObject, Collider>(
-            gameObject, "OnHealthDamageReceived", OnDamageReceived);
+            gameObject, "OnHealthDamage", OnDamageReceived); 
     }
 
     void OnDestroy()
     {
         EventHandler.UnregisterEvent<Vector3, Vector3, GameObject>(gameObject, "OnDeath", OnAIDeath);
         EventHandler.UnregisterEvent<float, Vector3, Vector3, GameObject, Collider>(
-            gameObject, "OnHealthDamageReceived", OnDamageReceived);
+            gameObject, "OnHealthDamage", OnDamageReceived); 
     }
 
     private void OnAIDeath(Vector3 position, Vector3 force, GameObject attacker)
@@ -34,7 +34,6 @@ public class AIEventHooks : MonoBehaviour
         {
             if (attacker.CompareTag("Player"))
             {
-                Debug.Log($"[TEST] Daño recibido por {gameObject.name}, atacante: {attacker?.name}, tag: {attacker?.tag}");
                 string zone = hitCollider != null &&
                               hitCollider.name.ToLower().Contains("head") ? "Head" : "Body";
                 Tracker.Instance.TrackEvent(new Shot_Hit(zone));

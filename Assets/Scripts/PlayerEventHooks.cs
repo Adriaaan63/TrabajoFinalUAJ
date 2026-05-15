@@ -32,7 +32,9 @@ public class PlayerEventHooks : MonoBehaviour
     private void OnPlayerRespawn()
     {
         if (!Tracker.Instance.IsReady) return;
-        Tracker.Instance.TrackEvent(new Player_Spawn(gameObject.name));
+        Vector3 pos = transform.position;
+        string spawnInfo = $"x:{pos.x:F1}_z:{pos.z:F1}";
+        Tracker.Instance.TrackEvent(new Player_Spawn(spawnInfo));
     }
 
     private void OnShotFired(IUsableItem item)
@@ -54,4 +56,4 @@ public class PlayerEventHooks : MonoBehaviour
             }
         }
     }
-}
+}   
