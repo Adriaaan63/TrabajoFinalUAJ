@@ -7,7 +7,7 @@ public class SessionUploader : MonoBehaviour
 {
     private string apiURL = "http://localhost:8000/upload_session";
 
-    // Llamar a esto cuando termina la partida (desde el GameManager de Opsive)
+    // Llamar a esto cuando termina la partida
     public void UploadAndEnd()
     {
         string json = TelemetryTracker.Instance.GetSessionJSON();

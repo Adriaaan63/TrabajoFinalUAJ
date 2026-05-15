@@ -6,7 +6,6 @@ public class WeaponEventHooks : MonoBehaviour
 {
     void Start()
     {
-        // El evento de disparo va en el propio GameObject del jugador
         EventHandler.RegisterEvent<IUsableItem>(gameObject, "OnItemUseComplete", OnShotFired);
         Debug.Log("[Telemetría] WeaponEventHooks registrado en: " + gameObject.name);
     }
