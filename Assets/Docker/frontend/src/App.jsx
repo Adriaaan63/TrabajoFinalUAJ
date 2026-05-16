@@ -1,11 +1,22 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
+import Home from './pages/Home';
+import PlayerTracker from './pages/PlayerTracker';
+import LabDashboard from './pages/LabDashboard';
+
 function App() {
   return (
-    <div className="flex items-center justify-center h-screen">
-      <h1 className="text-4xl font-bold text-cyan-400">
-        FPS Telemetry Inicializado 🚀
-      </h1>
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        {/* El Layout envuelve a todas las rutas */}
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="player/:id" element={<PlayerTracker />} />
+          <Route path="lab" element={<LabDashboard />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
