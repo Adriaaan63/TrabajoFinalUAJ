@@ -39,16 +39,16 @@ REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
 REDIS_DB = int(os.getenv("REDIS_DB", "0"))
 REDIS_QUEUE_KEY = os.getenv("REDIS_QUEUE_KEY", "sessions_to_process")
 
-EVENT_KILL = os.getenv("EVENT_KILL", "Player_Kill")
 EVENT_DEATH = os.getenv("EVENT_DEATH", "Player_Death")
-EVENT_SHOT = os.getenv("EVENT_SHOT", "Player_Shot")
-EVENT_HIT = os.getenv("EVENT_HIT", "Player_Hit")
+EVENT_AI_DEATH = os.getenv("EVENT_AI_DEATH", "AI_Death")  # las kills del jugador se derivan de aqui (killer_id == player_id)
+EVENT_SHOT = os.getenv("EVENT_SHOT", "Shot_Fired")
+EVENT_HIT = os.getenv("EVENT_HIT", "Shot_Hit")
 EVENT_SPAWN = os.getenv("EVENT_SPAWN", "Player_Spawn")
 EVENT_SESSION_START = os.getenv("EVENT_SESSION_START", "Session_Start")
 EVENT_SESSION_END = os.getenv("EVENT_SESSION_END", "Session_End")
 EVENT_POSITION = os.getenv("EVENT_POSITION", "Player_Position_Heartbeat")
 EVENT_ITEM = os.getenv("EVENT_ITEM", "Item_Picked")
-EVENT_PLAYER_ID = os.getenv("EVENT_PLAYER_ID", "Player_Id")  # nuevo: identifica al jugador de la sesion
+EVENT_PLAYER_ID = os.getenv("EVENT_PLAYER_ID", "Player_Id")
 
 if not MONGO_URL:
     raise RuntimeError("Falta MONGO_URL en el entorno")
@@ -350,7 +350,13 @@ def build_session_metrics(session: dict[str, Any]) -> dict[str, Any]:
         get_event_time(sorted_events[-1], started_at) if sorted_events else None
     )
 
-    kills = sum(1 for e in sorted_events if event_type(e) == EVENT_KILL)
+    # El cliente no envia un evento explicito "Player_Kill". Cada vez que el
+    # jugador mata a un agente IA, ese suceso aparece como AI_Death con su
+    # killer_id apuntando al jugador. Por tanto, las kills se cuentan asi.
+    kills = sum(
+        1 for e in sorted_events
+        if event_type(e) == EVENT_AI_DEATH and str(e.get("killer_id") or "") == player_id
+    )
     deaths = sum(1 for e in sorted_events if event_type(e) == EVENT_DEATH)
     shots_fired = sum(1 for e in sorted_events if event_type(e) == EVENT_SHOT)
     shots_hit = sum(1 for e in sorted_events if event_type(e) == EVENT_HIT)
@@ -398,6 +404,25 @@ def build_session_metrics(session: dict[str, Any]) -> dict[str, Any]:
                     "occurred_at": occurred_at,
                 })
             last_spawn_at = None
+            continue
+
+        if ev_type == EVENT_AI_DEATH:
+            # Muertes de agentes IA. No murio un jugador, asi que player_id queda NULL
+            # y ttl_seconds no aplica. Se guardan para el heatmap de mortalidad (M2.2)
+            # con is_ai=True para poder filtrarlas desde la Query API.
+            pos_x, pos_z, floor_id = get_pos(event)
+            if pos_x is not None and pos_z is not None:
+                death_rows.append({
+                    "session_id": session_id,
+                    "player_id": None,
+                    "pos_x": pos_x,
+                    "pos_z": pos_z,
+                    "floor_id": floor_id,
+                    "killer_id": (str(event.get("killer_id"))[:64] if event.get("killer_id") else None),
+                    "is_ai": True,
+                    "ttl_seconds": None,
+                    "occurred_at": occurred_at,
+                })
             continue
 
         if ev_type == EVENT_POSITION:
