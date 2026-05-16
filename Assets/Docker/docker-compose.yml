@@ -28,3 +28,17 @@ services:
         env_file:
             - .env
         command: python main.py # <--- Y AQUÍ TAMBIÉN
+    frontend:
+        build: ./frontend
+        ports:
+            - "5173:5173"
+        volumes:
+            # Sincroniza tu código local con el contenedor en tiempo real
+            - ./frontend:/app
+            # Evita conflictos de librerías entre Windows y el Linux del contenedor
+            - /app/node_modules
+        environment:
+            # Una variable de entorno para saber dónde golpear a la Query API
+            - VITE_API_URL=http://localhost:8001/api/v1
+        depends_on:
+            - query-api
