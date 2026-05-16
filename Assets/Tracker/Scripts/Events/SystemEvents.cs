@@ -6,8 +6,9 @@ using UnityEngine;
 
 [System.Serializable]
 public class Session_Start : TrackerEvent
-{
-    public Session_Start() : base() { }
+{ 
+    public Session_Start() : base() {
+    }
 }
 
 [System.Serializable]
@@ -16,8 +17,18 @@ public class Session_End : TrackerEvent
     public Session_End() : base() { }
 }
 
+[System.Serializable]
+public class Player_Id : TrackerEvent
+{
+    public string player_id; 
+    public Player_Id(string player_id) : base()
+    {
+        this.player_id = player_id;
+    }
+}
+
 // ------------------------------
-//    EVENTOS DE SESION
+//    EVENTOS DE NIVEL
 // ------------------------------
 
 [System.Serializable]

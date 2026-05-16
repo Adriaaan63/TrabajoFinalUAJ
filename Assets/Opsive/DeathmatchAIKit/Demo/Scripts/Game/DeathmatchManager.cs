@@ -187,6 +187,7 @@ namespace Opsive.DeathmatchAIKit.Demo.Game
             // No action for the main menu scene.
             if (FindObjectOfType<UltimateCharacterController.SimulationManager>() != null) {
                 SceneLoaded();
+                Tracker.Instance.TrackEvent(new Player_Id(m_PlayerName)); 
             }
         }
 

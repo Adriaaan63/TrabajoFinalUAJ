@@ -123,7 +123,6 @@ public class DockerPersistence : IPersistence
         // }
         return "{" +
                $"\"session_id\":\"{EscapeJson(_sessionId)}\"," +
-               $"\"player_id\":\"{EscapeJson(_sessionId)}\"," +
                $"\"events\":{eventsJsonArray}" +
                "}";
     }

@@ -48,6 +48,7 @@ EVENT_SESSION_START = os.getenv("EVENT_SESSION_START", "Session_Start")
 EVENT_SESSION_END = os.getenv("EVENT_SESSION_END", "Session_End")
 EVENT_POSITION = os.getenv("EVENT_POSITION", "Player_Position_Heartbeat")
 EVENT_ITEM = os.getenv("EVENT_ITEM", "Item_Picked")
+EVENT_PLAYER_ID = os.getenv("EVENT_PLAYER_ID", "Player_Id")  # nuevo: identifica al jugador de la sesion
 
 if not MONGO_URL:
     raise RuntimeError("Falta MONGO_URL en el entorno")
@@ -286,6 +287,23 @@ def bool_from_event(value: Any) -> bool:
 def avg(values: list[float]) -> float:
     return round(sum(values) / len(values), 2) if values else 0.0
 
+
+def find_player_id_from_events(events: list[dict[str, Any]]) -> str | None:
+    """Busca el evento Player_Id en la sesion y devuelve su campo player_id.
+
+    El cliente envia ahora el nombre del jugador como un evento aparte:
+        {"event_type": "Player_Id", "player_id": "marrks", ...}
+
+    Devuelve None si no se encuentra o si el valor esta vacio, para que el
+    caller pueda caer a otros fallbacks.
+    """
+    for event in events:
+        if event_type(event) == EVENT_PLAYER_ID:
+            pid = event.get("player_id")
+            if pid:
+                return str(pid)
+    return None
+
 # ---------------------------------------------------------------------------
 # Schema
 # ---------------------------------------------------------------------------
@@ -309,7 +327,16 @@ def build_session_metrics(session: dict[str, Any]) -> dict[str, Any]:
     now = datetime.now(timezone.utc)
 
     session_id = str(session.get("session_id") or session.get("match_id") or session.get("_id"))[:64]
-    player_id = str(session.get("player_id") or session_id)[:64]
+
+    # Prioridad para resolver el player_id:
+    #   1. Evento Player_Id dentro del array `events`     <- formato actual del cliente
+    #   2. Campo player_id en la raiz del documento Mongo <- compat con datos antiguos
+    #   3. Fallback al propio session_id                   <- ultimo recurso, no deberia ocurrir
+    player_id = str(
+        find_player_id_from_events(events)
+        or session.get("player_id")
+        or session_id
+    )[:64]
 
     sorted_events = sorted(events, key=lambda e: get_event_time(e, now))
 
