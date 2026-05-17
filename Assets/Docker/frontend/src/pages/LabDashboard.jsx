@@ -3,6 +3,7 @@ import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, Legend, ResponsiveCont
 import { Target, Package, Crosshair, Map as MapIcon, Loader2 } from 'lucide-react';
 import simpleheat from 'simpleheat';
 import { api } from '../services/api';
+import mapaImagen from '../assets/mapa_base.png';
 
 // =====================================================================
 // CONFIGURACIÓN DEL MAPA (¡Ajusta esto a tu escena de Unity!)
@@ -203,7 +204,7 @@ export default function LabDashboard() {
               
               {/* Imagen de fondo del mapa de Unity */}
               <img 
-                src="/mapa_base.png" 
+                src={mapaImagen}
                 alt="Mapa del Nivel" 
                 className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity"
               />
