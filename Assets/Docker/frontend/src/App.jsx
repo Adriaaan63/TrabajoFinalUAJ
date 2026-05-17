@@ -6,7 +6,7 @@ import LabDashboard from './pages/LabDashboard';
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         {/* El Layout envuelve a todas las rutas */}
         <Route path="/" element={<Layout />}>
