@@ -31,11 +31,11 @@ jobs:
           node-version: 20
 
       - name: Instalar dependencias
-        working-directory: ./frontend
+        working-directory: ./Assets/Docker/frontend
         run: npm install
 
       - name: Construir proyecto (Build)
-        working-directory: ./frontend
+        working-directory: ./Assets/Docker/frontend
         run: npm run build
 
       - name: Configurar GitHub Pages
@@ -44,7 +44,7 @@ jobs:
       - name: Subir artefacto (Carpeta dist)
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './frontend/dist'
+          path: './Assets/Docker/frontend/dist'
 
       - name: Desplegar en GitHub Pages
         id: deployment
