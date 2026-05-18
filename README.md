@@ -232,162 +232,205 @@ Además, SQLAlchemy se configuró con `pool_pre_ping=True` y `pool_recycle=1800`
 En conjunto, esta capa convierte los eventos crudos generados en Unity en métricas analíticas persistentes listas para explotación visual y validación cuantitativa de hipótesis de diseño.
 
 ---
-#### **3.4. Implementación de la Capa de Consulta y Servicio de Datos (`query_api/`)** <a name="3-arquitectura-docker1"></a>
 
-La cuarta capa de la arquitectura corresponde al microservicio de lectura encargado de exponer al mundo exterior los agregados relacionales que el motor analítico ha consolidado en PostgreSQL. Mientras que la Ingest API se especializa en absorber escrituras y el worker se centra en transformar datos crudos en métricas, la Query API adopta un rol exclusivamente de servicio: traduce filas de PostgreSQL en respuestas JSON estructuradas, validadas y autodocumentadas, listas para ser consumidas tanto por el frontend del jugador como por el dashboard interno de investigación.
+#### **3.4. Implementación de la Capa de Consulta y Servicio de Datos (`query_api/`)**
 
-Su diseño parte de una premisa explícita: **es una API de solo lectura**. Esta decisión elimina la necesidad de transacciones complejas, colas de tareas o estado mutable, lo que se traduce en una arquitectura más sencilla, mayor rendimiento por petición y un perfil de seguridad reducido.
+La Query API constituye la cuarta capa de la arquitectura y actúa como un microservicio de solo lectura encargado de exponer las métricas procesadas almacenadas en PostgreSQL. Mientras la Ingest API almacena eventos crudos y el Metrics Worker transforma esos eventos en métricas analíticas, esta capa convierte los datos relacionales en respuestas JSON estructuradas listas para ser consumidas desde el frontend y el dashboard de investigación. :contentReference[oaicite:0]{index=0}
+
+El sistema se diseñó explícitamente como una API de solo lectura, eliminando la necesidad de transacciones complejas o lógica de escritura concurrente. Esto simplifica la arquitectura, reduce la superficie de fallo y mejora el rendimiento general de las consultas. :contentReference[oaicite:1]{index=1}
+
+---
 
 ##### **A. Arquitectura Modular del Servicio**
 
-El microservicio se estructura siguiendo una división estricta de responsabilidades por archivo, evitando ficheros monolíticos y facilitando el mantenimiento futuro:
+La aplicación se organiza de forma modular separando responsabilidades entre distintos archivos:
 
-| Archivo                            | Responsabilidad                                             |
-| ---------------------------------- | ----------------------------------------------------------- |
-| `main.py`                          | Punto de entrada, montaje de routers y middleware           |
-| `config.py`                        | Lectura y validación de variables de entorno                |
-| `database.py`                      | Pool de conexiones SQLAlchemy y context manager             |
-| `schemas.py`                       | Modelos Pydantic de validación de respuestas                |
-| `routers/health.py`                | Endpoint de salud                                           |
-| `routers/players.py`               | Bloque 1: Tracker del jugador                               |
-| `routers/heatmaps.py`              | Bloque 2: Heatmaps de mortalidad y navegación               |
-| `routers/metrics.py`               | Bloque 2: Distribuciones agregadas y resúmenes              |
-| `sql/schema_reference.sql`         | Contrato del esquema PostgreSQL esperado                    |
-| `Dockerfile`                       | Imagen aislada con usuario no privilegiado y *healthcheck*  |
+| Archivo | Responsabilidad |
+|---|---|
+| `main.py` | Punto de entrada y middleware |
+| `config.py` | Variables de entorno |
+| `database.py` | Pool de conexiones SQLAlchemy |
+| `schemas.py` | Validación mediante Pydantic |
+| `routers/players.py` | Endpoints del Tracker |
+| `routers/heatmaps.py` | Heatmaps espaciales |
+| `routers/metrics.py` | Métricas agregadas |
+| `routers/health.py` | Monitorización del servicio |
 
-Cada router agrupa endpoints temáticamente relacionados y se monta dinámicamente desde `main.py` sobre el prefijo común `/api/v1`, manteniendo el endpoint de salud `/health` deliberadamente fuera del prefijo para que sea trivialmente accesible desde sondas externas.
+Cada router agrupa endpoints relacionados y se monta bajo el prefijo común `/api/v1`, mientras que el endpoint `/health` permanece fuera del prefijo para facilitar monitorización externa desde Docker. :contentReference[oaicite:2]{index=2}
 
-##### **B. Configuración Centralizada (`config.py`)**
+---
 
-La gestión de variables de entorno se centraliza mediante `pydantic-settings`, evitando la dispersión de llamadas a `os.getenv()`.
+##### **B. Configuración Centralizada y Conexión SQL**
 
+La configuración se centraliza mediante `pydantic-settings`, evitando llamadas dispersas a `os.getenv()` y permitiendo validar automáticamente las variables de entorno durante el arranque del sistema.
 
+La conexión a PostgreSQL utiliza SQLAlchemy Core en lugar de ORM completo, priorizando rendimiento y control explícito de las consultas SQL. Además, el engine se configuró con:
 
-El decorador `@lru_cache` garantiza que la instancia se construya una única vez durante el ciclo de vida del proceso, eliminando relecturas innecesarias. La validación tipada de Pydantic detecta errores de configuración en el arranque y no en tiempo de ejecución.
+```python
+pool_pre_ping=True
+pool_recycle=1800
+````
 
-##### **C. Capa de Acceso Relacional (`database.py`)**
+Estas opciones permiten detectar conexiones inválidas automáticamente y reciclar conexiones antiguas, resolviendo problemas habituales de proveedores cloud como Supabase. 
 
-La conexión a PostgreSQL utiliza **SQLAlchemy Core** y deliberadamente prescinde del ORM completo. Esta elección responde a tres factores: rendimiento (no se mapean filas a clases Python), explicitud (cada consulta SQL es visible en el código) e inmunidad a inyección (parámetros nombrados separados del texto SQL).
+---
 
+##### **C. Diseño del Esquema Relacional**
 
+La Query API trabaja sobre dos grandes familias de tablas:
 
-Las dos opciones críticas son `pool_pre_ping=True`, que ejecuta un `SELECT 1` antes de entregar cada conexión para detectar las que estén muertas, y `pool_recycle=1800`, que descarta automáticamente conexiones con más de 30 minutos de antigüedad. Ambas resuelven el problema típico de las bases en la nube (Supabase, en este proyecto), donde el proveedor cierra silenciosamente las conexiones inactivas.
+| Tipo      | Tablas                                           | Estrategia |
+| --------- | ------------------------------------------------ | ---------- |
+| Agregados | `player_stats`, `session_stats`                  | UPSERT     |
+| Eventos   | `death_events`, `position_events`, `item_events` | INSERT     |
 
-##### **D. Esquema Relacional Consultado (`sql/schema_reference.sql`)**
+Las tablas agregadas almacenan estadísticas consolidadas y métricas históricas del jugador, mientras que las tablas de eventos contienen información individual utilizada posteriormente para análisis espaciales y distribuciones estadísticas. 
 
-El esquema relacional sobre el que opera la Query API está diseñado para resolver dos problemas distintos con dos estrategias distintas. Por un lado, las consultas del **Tracker del jugador** requieren respuestas inmediatas con métricas ya calculadas (K/D, accuracy, TTL medio); por otro, las consultas de **Análisis** necesitan acceder a eventos individuales para construir distribuciones espaciales (heatmaps) y temporales (histogramas).
+###### **1. Tabla `player_stats`**
 
-Esta dualidad se materializa en dos familias de tablas:
+Almacena una fila por jugador con estadísticas globales acumuladas:
 
-| Familia      | Tablas                                                    | Estrategia de escritura  | Volumen           |
-| ------------ | --------------------------------------------------------- | ------------------------ | ----------------- |
-| **Agregados**| `player_stats`, `session_stats`                           | UPSERT (idempotente)     | Pequeño y acotado |
-| **Eventos**  | `death_events`, `position_events`, `item_events`          | INSERT (append-only)     | Crece linealmente |
+* Kills totales.
+* Deaths totales.
+* Accuracy media.
+* K/D ratio.
+* Tiempo total jugado.
+* Número de sesiones.
 
-###### **1. Tabla `player_stats` — Acumulado por Jugador**
+La tabla es actualizada por el worker mediante operaciones UPSERT:
 
-Almacena una fila por jugador con sus estadísticas globales acumuladas a lo largo de toda su historia. Es la fuente directa del endpoint de perfil del Tracker.
+```sql
+ON CONFLICT (player_id) DO UPDATE
+```
 
+garantizando consistencia incluso si una sesión es reprocesada. 
 
+---
 
-El worker actualiza esta tabla mediante `INSERT ... ON CONFLICT (player_id) DO UPDATE`, lo que garantiza que el resultado es el mismo independientemente del número de veces que se reprocese una misma sesión. El índice de la clave primaria es suficiente: todas las consultas filtran por `player_id`.
+###### **2. Tabla `session_stats`**
 
-###### **2. Tabla `session_stats` — Resumen por Partida**
-
-Almacena una fila por sesión jugada. Mantiene una referencia explícita a `player_stats` mediante clave foránea con `ON DELETE CASCADE`, de forma que borrar a un jugador limpia automáticamente todo su historial:
+Almacena una fila individual por partida:
 
 ```sql
 CREATE TABLE IF NOT EXISTS session_stats (
-    session_id        VARCHAR(64)   PRIMARY KEY,
-    player_id         VARCHAR(64)   NOT NULL
-                      REFERENCES player_stats(player_id) ON DELETE CASCADE,
-    started_at        TIMESTAMPTZ   NOT NULL,
+    session_id        VARCHAR(64) PRIMARY KEY,
+    player_id         VARCHAR(64),
+    started_at        TIMESTAMPTZ,
     ended_at          TIMESTAMPTZ,
-    duration_seconds  INTEGER       NOT NULL DEFAULT 0,
-    kills             INTEGER       NOT NULL DEFAULT 0,
-    deaths            INTEGER       NOT NULL DEFAULT 0,
-    kd_ratio          NUMERIC(10,4) NOT NULL DEFAULT 0,
-    accuracy          NUMERIC(5,4)  NOT NULL DEFAULT 0,
-    avg_ttl_seconds   NUMERIC(8,2)  NOT NULL DEFAULT 0,
-    shots_fired       INTEGER       NOT NULL DEFAULT 0,
-    shots_hit         INTEGER       NOT NULL DEFAULT 0,
-    items_picked      INTEGER       NOT NULL DEFAULT 0
+    duration_seconds  INTEGER,
+    kills             INTEGER,
+    deaths            INTEGER,
+    kd_ratio          NUMERIC(10,4),
+    accuracy          NUMERIC(5,4)
 );
-
-CREATE INDEX idx_session_player_time
-    ON session_stats (player_id, started_at DESC);
 ```
 
-El índice compuesto `(player_id, started_at DESC)` resulta crítico: los endpoints de historial y progresión filtran por jugador y ordenan por fecha, por lo que este índice convierte la consulta paginada en una operación de coste constante independiente del volumen total de la tabla.
+Además, se creó el índice:
 
-###### **3. Tabla `death_events` — Registro Individual de Muertes**
+```sql
+CREATE INDEX idx_session_player_time
+ON session_stats (player_id, started_at DESC);
+```
 
-Cada fila representa una muerte del jugador con sus coordenadas espaciales, su contexto y el TTL asociado (tiempo transcurrido desde el último `Player_Spawn`), los tres índices secundarios responden a los tres filtros opcionales del endpoint de heatmap (`floor_id`, `session_id`, `player_id`), permitiendo segmentar la nube de calor sin escanear toda la tabla. La columna `ttl_seconds` alimenta el histograma de Time-to-Live; la columna `is_ai` permite distinguir muertes de jugadores reales de muertes de agentes IA.
+Este índice optimiza las consultas de historial y progresión temporal del jugador. 
 
-###### **4. Tabla `position_events` — Heartbeats de Posición**
+---
 
-Almacena las trazas de movimiento del jugador, registradas cada cinco segundos mientras está vivo:
+###### **3. Tabla `death_events`**
+
+Cada fila representa una muerte individual con:
+
+* Coordenadas X/Z.
+* Killer.
+* TTL asociado.
+* Planta del mapa.
+* Tipo de muerte.
+
+Estos datos son utilizados posteriormente para generar heatmaps de mortalidad y distribuciones de supervivencia. 
+
+---
+
+###### **4. Tabla `position_events`**
+
+Registra los heartbeats de posición enviados cada cinco segundos mientras el jugador está vivo:
 
 ```sql
 CREATE TABLE IF NOT EXISTS position_events (
-    id           BIGSERIAL        PRIMARY KEY,
-    session_id   VARCHAR(64)      NOT NULL,
-    player_id    VARCHAR(64)      NOT NULL,
-    pos_x        DOUBLE PRECISION NOT NULL,
-    pos_z        DOUBLE PRECISION NOT NULL,
-    floor_id     INTEGER,
-    recorded_at  TIMESTAMPTZ      NOT NULL
+    id BIGSERIAL PRIMARY KEY,
+    session_id VARCHAR(64),
+    player_id VARCHAR(64),
+    pos_x DOUBLE PRECISION,
+    pos_z DOUBLE PRECISION,
+    recorded_at TIMESTAMPTZ
 );
-
-CREATE INDEX idx_position_floor  ON position_events (floor_id);
-CREATE INDEX idx_position_player ON position_events (player_id);
 ```
 
-Esta es, por mucho, la tabla con mayor volumen de filas (una cada cinco segundos por jugador vivo). Por ello, el endpoint que la consulta impone un `LIMIT` agresivo por defecto (10 000 puntos), suficiente para construir heatmaps representativos sin saturar el navegador.
+Esta tabla constituye la principal fuente para construir mapas térmicos de navegación. 
 
-###### **5. Tabla `item_events` — Recogidas de Objetos**
+---
 
-Registra cada recogida individual con su tipo, permitiendo agregaciones por categoría desde el endpoint correspondiente:
+###### **5. Tabla `item_events`**
 
-```sql
-CREATE TABLE IF NOT EXISTS item_events (
-    id           BIGSERIAL    PRIMARY KEY,
-    session_id   VARCHAR(64)  NOT NULL,
-    player_id    VARCHAR(64)  NOT NULL,
-    item_type    VARCHAR(32)  NOT NULL,
-    occurred_at  TIMESTAMPTZ  NOT NULL
-);
+Registra cada recogida individual de objetos:
 
-CREATE INDEX idx_item_player ON item_events (player_id);
-CREATE INDEX idx_item_type   ON item_events (item_type);
+* Tipo de arma.
+* Munición.
+* Objetos de curación.
+* Recursos secundarios.
+
+Esto permite analizar el comportamiento económico del jugador y validar hipótesis relacionadas con el uso del arsenal. 
+
+---
+
+##### **D. Validación mediante Pydantic**
+
+Todos los endpoints utilizan modelos Pydantic definidos en `schemas.py`:
+
+```python
+response_model=PlayerProfile
 ```
 
-El índice sobre `item_type` acelera la consulta `GROUP BY item_type` del endpoint de economía de objetos, evitando un *full scan* incluso cuando la tabla crece a cientos de miles de filas.
+FastAPI utiliza estos modelos para:
 
-##### **E. Validación de Respuestas mediante Pydantic (`schemas.py`)**
+* Validar automáticamente las respuestas.
+* Generar documentación OpenAPI.
+* Filtrar campos inesperados.
+* Tipar correctamente los JSON devueltos.
 
-Cada endpoint declara un `response_model` apuntando a una clase Pydantic definida en `schemas.py`. FastAPI utiliza estos modelos para tres propósitos simultáneos:
+Gracias a ello, la documentación se genera automáticamente en:
 
-* **Validar** que la API devuelve exactamente lo que su contrato declara.
-* **Generar** automáticamente el esquema OpenAPI 3.1 visible en `/docs` y `/redoc`.
-* **Filtrar** campos accidentales antes de serializar el JSON de salida.
+| Ruta     | Función    |
+| -------- | ---------- |
+| `/docs`  | Swagger UI |
+| `/redoc` | ReDoc      |
 
-Los schemas se agrupan en tres bloques semánticos: **Salud** (`HealthStatus`), **Tracker del Jugador** (`PlayerProfile`, `SessionSummary`, `ProgressionPoint`) y **Análisis** (`HeatmapPoint`, `HeatmapResponse`, `TtlDistribution`, `ItemInteractionResponse`, `GlobalSummary`).
 
-##### **F. Bloque 1 — Endpoints del Tracker del Jugador (`routers/players.py`)**
 
-Este bloque alimenta el módulo de retención y competitividad del frontend. Expone tres endpoints diseñados para construir la vista personal del jugador. Todos parten de la tabla `player_stats` o `session_stats` y devuelven datos pre-calculados que el worker ya ha consolidado, lo que garantiza respuestas inmediatas.
+---
 
-###### **1. Perfil agregado — `GET /api/v1/players/{player_id}`**
+##### **E. Endpoints del Tracker del Jugador**
 
-Devuelve la tarjeta principal del Tracker leyendo directamente de `player_stats`. Recibe el identificador del jugador como parte de la ruta y no acepta parámetros adicionales.
+El bloque `players.py` implementa los endpoints principales del Tracker:
 
-**Ejemplo de petición:**
-```http
-GET /api/v1/players/mochomojao
-```
+| Endpoint                    | Función               |
+| --------------------------- | --------------------- |
+| `/players/{id}`             | Perfil global         |
+| `/players/{id}/sessions`    | Historial de partidas |
+| `/players/{id}/progression` | Evolución temporal    |
 
-**Ejemplo de respuesta (`200 OK`):**
+Estos endpoints consultan directamente las tablas agregadas y permiten mostrar en el frontend:
+
+* Evolución del K/D.
+* Accuracy.
+* Tiempo medio de supervivencia.
+* Rendimiento histórico.
+
+
+
+---
+
+###### **Ejemplo de perfil de jugador**
+
 ```json
 {
   "player_id": "mochomojao",
@@ -395,347 +438,117 @@ GET /api/v1/players/mochomojao
   "total_deaths": 32,
   "kd_ratio": 1.4687,
   "avg_accuracy": 0.2143,
-  "avg_ttl_seconds": 18.45,
-  "total_sessions": 6,
-  "total_playtime_seconds": 1247,
-  "items_picked": 89
+  "avg_ttl_seconds": 18.45
 }
 ```
 
-Si el identificador no existe, la API responde con `404 Not Found`:
-```json
-{ "detail": "Jugador 'desconocido' no encontrado" }
-```
 
-###### **2. Historial de sesiones — `GET /api/v1/players/{player_id}/sessions`**
 
-Devuelve una lista paginada de las partidas jugadas, ordenadas de la más reciente a la más antigua. Acepta dos parámetros de paginación:
+---
 
-| Parámetro | Tipo | Default | Rango  | Descripción                          |
-| --------- | ---- | ------- | ------ | ------------------------------------ |
-| `limit`   | int  | `20`    | 1–200  | Número de sesiones por página        |
-| `offset`  | int  | `0`     | ≥ 0    | Desplazamiento para paginación       |
+##### **F. Endpoints Analíticos y Heatmaps**
 
-**Ejemplo de petición:**
-```http
-GET /api/v1/players/mochomojao/sessions?limit=2&offset=0
-```
+El bloque `heatmaps.py` implementa endpoints destinados al dashboard de investigación:
 
-**Ejemplo de respuesta:**
-```json
-[
-  {
-    "session_id": "d3b2a079-1f79-4025-a28a-8fbf6bbda060",
-    "started_at": "2026-05-16T19:59:26+00:00",
-    "ended_at":   "2026-05-16T20:01:26+00:00",
-    "duration_seconds": 120,
-    "kills": 4,
-    "deaths": 10,
-    "kd_ratio": 0.4,
-    "accuracy": 0.2156,
-    "avg_ttl_seconds": 17.32,
-    "shots_fired": 87,
-    "shots_hit": 19,
-    "items_picked": 13
-  },
-  {
-    "session_id": "f9a18c20-...",
-    "started_at": "2026-05-15T18:14:02+00:00",
-    "ended_at":   "2026-05-15T18:16:45+00:00",
-    "duration_seconds": 163,
-    "kills": 7,
-    "deaths": 8,
-    "kd_ratio": 0.875,
-    "accuracy": 0.2381,
-    "avg_ttl_seconds": 19.48,
-    "shots_fired": 105,
-    "shots_hit": 25,
-    "items_picked": 16
-  }
-]
-```
+| Endpoint               | Función               |
+| ---------------------- | --------------------- |
+| `/heatmaps/deaths`     | Heatmap de mortalidad |
+| `/heatmaps/navigation` | Heatmap de navegación |
 
-###### **3. Curva de progresión — `GET /api/v1/players/{player_id}/progression`**
+Ambos endpoints devuelven coordenadas `(x,z)` compatibles directamente con la librería `simpleheat` utilizada en el frontend. 
 
-Endpoint diseñado específicamente para validar la **Hipótesis 3**. Devuelve las últimas N sesiones del jugador en **orden cronológico ascendente** (la más antigua primero), junto con un número de partida secuencial calculado en SQL:
+###### **Ejemplo de respuesta**
 
-```sql
-ROW_NUMBER() OVER (ORDER BY started_at ASC) AS session_number
-```
-
-| Parámetro | Tipo | Default | Rango  | Descripción                          |
-| --------- | ---- | ------- | ------ | ------------------------------------ |
-| `limit`   | int  | `50`    | 1–500  | Número de puntos de la curva         |
-
-**Ejemplo de petición:**
-```http
-GET /api/v1/players/mochomojao/progression?limit=3
-```
-
-**Ejemplo de respuesta:**
-```json
-[
-  { "session_number": 1, "session_id": "a1...", "played_at": "2026-05-10T17:01:00+00:00", "kd_ratio": 0.20, "accuracy": 0.1421, "avg_ttl_seconds": 12.30 },
-  { "session_number": 2, "session_id": "b2...", "played_at": "2026-05-12T18:45:00+00:00", "kd_ratio": 0.45, "accuracy": 0.1843, "avg_ttl_seconds": 15.10 },
-  { "session_number": 3, "session_id": "c3...", "played_at": "2026-05-14T20:22:00+00:00", "kd_ratio": 0.85, "accuracy": 0.2156, "avg_ttl_seconds": 18.00 }
-]
-```
-
-Esta numeración permite al frontend renderizar la lista directamente sobre un gráfico de líneas de Recharts. Si la pendiente del ajuste lineal sobre `kd_ratio` y `accuracy` es positiva a lo largo de las sesiones, H3 queda empíricamente corroborada.
-
-##### **G. Bloque 2 — Endpoints de Análisis e Investigación**
-
-Esta familia de endpoints alimenta el Laboratorio de Investigación interno y proporciona los datos cuantitativos necesarios para validar las hipótesis H1, H2 y H4. A diferencia del Bloque 1, estas consultas operan sobre las tablas de eventos crudos (`death_events`, `position_events`, `item_events`) y aplican agregaciones SQL en tiempo de petición.
-
-###### **1. Heatmap de mortalidad — `GET /api/v1/heatmaps/deaths`**
-
-Sirve coordenadas `(x, z)` de muertes registradas en formato directamente compatible con la librería `simpleheat` del frontend. Implementa un constructor seguro de cláusulas `WHERE` para combinar filtros opcionales sin riesgo de inyección:
-
-```python
-conditions: list[str] = ["TRUE"]
-params: dict[str, object] = {}
-
-if floor_id is not None:
-    conditions.append("floor_id = :floor_id")
-    params["floor_id"] = floor_id
-```
-
-| Parámetro            | Tipo   | Default | Rango     | Descripción                                |
-| -------------------- | ------ | ------- | --------- | ------------------------------------------ |
-| `floor_id`           | int    | —       | —         | Filtra por planta del mapa                 |
-| `session_id`         | string | —       | —         | Limita a una partida concreta              |
-| `player_id`          | string | —       | —         | Limita a las muertes de un jugador         |
-| `include_ai_deaths`  | bool   | `true`  | —         | Si `false`, solo muertes humanas           |
-| `limit`              | int    | `5000`  | 1–50000   | Tope máximo de puntos                      |
-
-**Ejemplo de petición:**
-```http
-GET /api/v1/heatmaps/deaths?floor_id=1&include_ai_deaths=false&limit=500
-```
-
-**Ejemplo de respuesta:**
 ```json
 {
-  "floor_id": 1,
-  "point_count": 3,
   "points": [
-    { "x": -28.99, "z":  -6.52, "value": 1.0 },
-    { "x": -17.01, "z":  -7.21, "value": 1.0 },
-    { "x":  22.11, "z": -24.35, "value": 1.0 }
+    { "x": -28.99, "z": -6.52, "value": 1.0 },
+    { "x": -17.01, "z": -7.21, "value": 1.0 }
   ]
 }
 ```
 
-El resultado es la métrica espacial M2.2 que permite identificar los choke points donde se concentran las bajas (Hipótesis 2).
+Estas visualizaciones permiten identificar:
 
-###### **2. Heatmap de navegación — `GET /api/v1/heatmaps/navigation`**
+* Choke points.
+* Zonas seguras.
+* Áreas infrautilizadas.
+* Patrones reales de navegación.
 
-Análogo al anterior pero sobre los heartbeats de posición registrados cada cinco segundos mientras el jugador está vivo. Constituye la métrica M2.1 y revela las zonas más transitadas del mapa.
 
-| Parámetro    | Tipo   | Default  | Rango      | Descripción                          |
-| ------------ | ------ | -------- | ---------- | ------------------------------------ |
-| `floor_id`   | int    | —        | —          | Filtra por planta del mapa           |
-| `session_id` | string | —        | —          | Limita a una partida concreta        |
-| `player_id`  | string | —        | —          | Limita a un jugador                  |
-| `limit`      | int    | `10000`  | 1–100000   | Tope máximo de puntos                |
 
-**Ejemplo de petición:**
-```http
-GET /api/v1/heatmaps/navigation?player_id=mochomojao&limit=200
-```
+---
 
-**Ejemplo de respuesta:** mismo formato que el heatmap de mortalidad, con coordenadas `(x, z)` de los puntos por los que ha pasado el jugador. La comparación visual entre ambos heatmaps (mortalidad frente a tránsito) permite distinguir las zonas seguras de las zonas calientes, validando o refutando la fricción navegacional descrita en la Hipótesis 2.
+##### **G. Métricas Estadísticas**
 
-###### **3. Distribución del Time-to-Live — `GET /api/v1/metrics/ttl-distribution`**
+El bloque `metrics.py` implementa endpoints de análisis estadístico:
 
-Construye el histograma del tiempo de supervivencia agrupando los TTL almacenados en `death_events` por buckets configurables:
+| Endpoint                     | Función             |
+| ---------------------------- | ------------------- |
+| `/metrics/ttl-distribution`  | Histograma TTL      |
+| `/metrics/item-interactions` | Economía de objetos |
+| `/metrics/global-summary`    | KPIs globales       |
+
+La distribución TTL agrupa las muertes por intervalos temporales utilizando consultas SQL agregadas:
 
 ```sql
 SELECT
-    FLOOR(ttl_seconds / :bucket) * :bucket AS bucket_start,
-    COUNT(*) AS death_count
-FROM death_events
-WHERE ttl_seconds IS NOT NULL
-GROUP BY bucket_start
-ORDER BY bucket_start ASC
+    FLOOR(ttl_seconds / :bucket) * :bucket
 ```
 
-| Parámetro              | Tipo   | Default | Rango | Descripción                              |
-| ---------------------- | ------ | ------- | ----- | ---------------------------------------- |
-| `player_id`            | string | —       | —     | Restringe el histograma a un jugador     |
-| `bucket_size_seconds`  | int    | `5`     | 1–60  | Anchura de cada bucket en segundos       |
+Esto permite estudiar si la mayoría de las muertes ocurren durante los primeros segundos de vida del jugador. 
 
-**Ejemplo de petición:**
+---
+
+##### **H. Endpoint de Salud y Manejo de Errores**
+
+El endpoint:
+
 ```http
-GET /api/v1/metrics/ttl-distribution?bucket_size_seconds=5
+GET /health
 ```
 
-**Ejemplo de respuesta:**
-```json
-{
-  "bucket_size_seconds": 5,
-  "total_deaths": 42,
-  "mean_seconds": 12.18,
-  "median_seconds": 9.30,
-  "buckets": [
-    { "bucket_start_seconds":  0.0, "bucket_end_seconds":  5.0, "count": 14 },
-    { "bucket_start_seconds":  5.0, "bucket_end_seconds": 10.0, "count": 13 },
-    { "bucket_start_seconds": 10.0, "bucket_end_seconds": 15.0, "count":  8 },
-    { "bucket_start_seconds": 15.0, "bucket_end_seconds": 20.0, "count":  4 },
-    { "bucket_start_seconds": 20.0, "bucket_end_seconds": 25.0, "count":  3 }
-  ]
-}
-```
+ejecuta un `SELECT 1` real contra PostgreSQL para comprobar el estado de la base de datos.
 
-La mediana se calcula con la función nativa de PostgreSQL `PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ttl_seconds)`, garantizando precisión estadística. Si la masa del histograma se concentra en los primeros buckets (0–10 segundos) y la mediana es baja, la **Hipótesis 1** (mortalidad temprana desproporcionada) queda respaldada empíricamente.
+Ejemplo:
 
-###### **4. Economía de objetos — `GET /api/v1/metrics/item-interactions`**
-
-Cuenta las recogidas agrupadas por tipo de objeto. Permite responder cuantitativamente a la pregunta planteada por la **Hipótesis 4**: si los jugadores ignoran sistemáticamente los recursos secundarios y se mantienen con el arma inicial, la desproporción entre categorías será evidente.
-
-| Parámetro    | Tipo   | Default | Descripción                              |
-| ------------ | ------ | ------- | ---------------------------------------- |
-| `player_id`  | string | —       | Limita el cálculo a un jugador concreto  |
-
-**Ejemplo de petición:**
-```http
-GET /api/v1/metrics/item-interactions
-```
-
-**Ejemplo de respuesta:**
-```json
-{
-  "total_pickups": 142,
-  "by_item_type": [
-    { "item_type": "Rifle",  "pickup_count": 58 },
-    { "item_type": "Pistol", "pickup_count": 41 },
-    { "item_type": "Rocket", "pickup_count": 27 },
-    { "item_type": "Health", "pickup_count": 12 },
-    { "item_type": "Ammo",   "pickup_count":  4 }
-  ]
-}
-```
-
-Los resultados se ordenan por frecuencia descendente, facilitando que el frontend los pinte directamente sobre un gráfico circular sin necesidad de reordenación.
-
-###### **5. Resumen global — `GET /api/v1/metrics/global-summary`**
-
-Devuelve los KPIs agregados del playtest. Es el endpoint más ligero del sistema: una única consulta SQL con cuatro subconsultas y un agregado. No acepta parámetros.
-
-**Ejemplo de petición:**
-```http
-GET /api/v1/metrics/global-summary
-```
-
-**Ejemplo de respuesta:**
-```json
-{
-  "total_players": 5,
-  "total_sessions": 31,
-  "total_deaths": 287,
-  "global_avg_kd": 0.8421,
-  "global_avg_accuracy": 0.2089,
-  "global_avg_ttl_seconds": 14.62
-}
-```
-
-Constituye la cabecera natural del dashboard interno, equivalente a la fila de indicadores que suele aparecer en la parte superior de cualquier panel analítico.
-
-##### **H. Endpoint de Salud (`routers/health.py`)**
-
-El endpoint `GET /health` queda deliberadamente fuera del prefijo `/api/v1` para facilitar el acceso desde el `HEALTHCHECK` del contenedor Docker y desde sondas externas de monitorización. No se limita a comprobar que el servidor responde: ejecuta un `SELECT 1` real contra PostgreSQL para verificar la conectividad efectiva con la base de datos.
-
-**Ejemplo de respuesta (`200 OK`):**
 ```json
 {
   "status": "ok",
-  "database": "up",
-  "version": "1.0.0",
-  "timestamp": "2026-05-18T10:32:14.215843+00:00"
+  "database": "up"
 }
 ```
 
-**Ejemplo de respuesta (`503 Service Unavailable`):**
-```json
-{
-  "status": "degraded",
-  "database": "down",
-  "version": "1.0.0",
-  "timestamp": "2026-05-18T10:32:14.215843+00:00"
-}
-```
+Además, el sistema implementa manejo centralizado de errores para:
 
-El código HTTP varía en función del estado real del sistema, permitiendo que Docker marque automáticamente el contenedor como `unhealthy` y dispare las políticas de reinicio configuradas.
+* Fallos SQLAlchemy.
+* Validaciones incorrectas.
+* Parámetros inválidos.
 
-##### **I. Manejo Centralizado de Errores**
+Los errores internos nunca exponen stacktraces al cliente, mejorando la seguridad del sistema. 
 
-Dos manejadores globales registrados en `main.py` convierten las excepciones más frecuentes en respuestas JSON consistentes:
+---
 
-```python
-@app.exception_handler(SQLAlchemyError)
-async def db_error_handler(request, exc):
-    logger.exception("Error de BD en %s %s", ...)
-    return JSONResponse(
-        status_code=503,
-        content={"detail": "Error al consultar la base de datos"},
-    )
-```
+##### **I. Integración con Docker**
 
-* `SQLAlchemyError` → `503 Service Unavailable` con un mensaje genérico. El *stacktrace* se registra en los logs internos pero **nunca se expone al cliente**, evitando filtración de información sensible sobre la estructura interna.
-* `RequestValidationError` → `422 Unprocessable Entity` con el detalle de los parámetros inválidos, facilitando la depuración del frontend.
+La Query API se despliega dentro de Docker utilizando una imagen ligera basada en:
 
-##### **J. Política CORS para Integración con el Frontend**
-
-Sin una política CORS explícita, el navegador bloquearía las peticiones del frontend React por incumplir la política de mismo origen. El middleware `CORSMiddleware` se configura para permitir únicamente lo estrictamente necesario:
-
-```python
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=get_settings().cors_origins,
-    allow_credentials=False,
-    allow_methods=["GET"],
-    allow_headers=["*"],
-)
-```
-
-La política se restringe al método `GET` (coherente con el carácter de solo lectura del servicio) y a los orígenes declarados en `CORS_ORIGINS`, que por defecto incluyen los puertos típicos de desarrollo (`localhost:3000` para CRA y `localhost:5173` para Vite).
-
-##### **K. Documentación Interactiva Automática**
-
-FastAPI genera automáticamente dos interfaces de documentación a partir de los `response_model` y las descripciones declarativas de los endpoints:
-
-| Ruta      | Interfaz                  | Función                                          |
-| --------- | ------------------------- | ------------------------------------------------ |
-| `/docs`   | **Swagger UI**            | Pruebas interactivas con botón *Execute*         |
-| `/redoc`  | **ReDoc**                 | Documentación legible en formato de lectura      |
-
-Ambas se actualizan sin intervención manual cada vez que se modifica un schema o se añade un endpoint, eliminando la deuda de mantenimiento típica de la documentación escrita a mano y garantizando que la documentación nunca quede desincronizada del código real.
-
-##### **L. Empaquetado y Despliegue con Docker**
-
-La imagen se construye sobre `python:3.11-slim` aplicando varias buenas prácticas de seguridad y eficiencia:
-
-```Dockerfile
+```dockerfile
 FROM python:3.11-slim
-ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-RUN useradd --create-home queryapi && chown -R queryapi:queryapi /app
-USER queryapi
-HEALTHCHECK CMD python -c "import urllib.request; ..."
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
 ```
 
-* **Capa de dependencias separada del código**: copia primero `requirements.txt`, instala y solo después copia el resto. Esto permite a Docker reutilizar la capa cacheada en cada rebuild, acelerando drásticamente los ciclos de desarrollo.
-* **Usuario no privilegiado (`queryapi`)**: el contenedor se ejecuta bajo un usuario sin permisos de *root*, reduciendo la superficie de ataque ante una eventual vulnerabilidad.
-* **`HEALTHCHECK` nativo**: Docker comprueba cada 30 segundos el endpoint `/health` y marca el contenedor como `unhealthy` tras tres fallos consecutivos.
-* **`PYTHONUNBUFFERED=1`**: garantiza que los logs salgan en tiempo real a `docker compose logs`, sin quedar atrapados en buffer.
+El contenedor:
 
-El servicio se orquesta desde el `docker-compose.yml` raíz del proyecto y depende implícitamente de la variable `POSTGRES_URL` definida en el `.env` compartido. Si la conexión a PostgreSQL falla durante el arranque, el *lifespan* de FastAPI lo detecta inmediatamente y termina el contenedor con error, evitando un servicio "vivo pero inservible".
+* Se ejecuta bajo un usuario sin privilegios.
+* Implementa `HEALTHCHECK`.
+* Expone el puerto `8001`.
+* Centraliza logs mediante `PYTHONUNBUFFERED=1`.
 
-En conjunto, esta capa transforma la base relacional inerte producida por el worker en una API REST viva, segura, autodocumentada y lista para integrarse tanto con interfaces de usuario finales como con herramientas internas de análisis cuantitativo.
+Esto garantiza aislamiento, reproducibilidad y monitorización automática dentro de la arquitectura distribuida del proyecto. 
+
+---
+
+En conjunto, esta capa transforma la base de datos relacional generada por el worker en una API REST segura, modular y autodocumentada, capaz de alimentar tanto el frontend competitivo del jugador como el dashboard analítico utilizado para validar hipótesis de diseño y comportamiento.
 
 --- 
 
