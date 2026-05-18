@@ -973,42 +973,182 @@ En conjunto, esta capa transforma la base relacional inerte producida por el wor
 
 #### **3.5. Implementación de la Capa de Visualización y Análisis Web (Frontend)**
 
-La capa final de la arquitectura la constituye la aplicación web estática (SPA), un centro de mando analítico diseñado para interactuar de forma interactiva con los datos procesados en la infraestructura relacional.
+Aquí tienes la reestructuración completa y detallada de la **Sección 3 (Punto 3: Implementación de la Capa de Visualización y Análisis Web)** para tu archivo `README.md`.
 
 ##### **A. Stack Tecnológico y Justificación de Herramientas**
-Para el desarrollo de la interfaz de usuario se descartaron frameworks tradicionales pesados en favor de un entorno ágil, moderno y de alto rendimiento adaptado a la estética de la industria del videojuego:
+Para el desarrollo de la interfaz de usuario se descartó el uso de plantillas genéricas o tecnologías tradicionales pesadas, optando por un stack moderno enfocado en la modularidad y la velocidad de renderizado:
 
-* **React (v19) + Vite (v8):** Se seleccionó React por su modelo de renderizado reactivo basado en componentes y estados dinámicos, ideal para paneles interactivos. **Vite** se implementó como empaquetador y motor de desarrollo debido a su arranque instantáneo mediante módulos ESM nativos y su *Hot Module Replacement* (HMR), reduciendo los tiempos de compilación frente a herramientas clásicas como Webpack.
-* **Tailwind CSS (v4):** La interfaz adopta un diseño oscuro de corte cibernético/gaming (`bg-slate-900`, acentos neón `text-cyan-400` y `text-purple-500`). Tailwind CSS permitió maquetar este estilo directamente sobre las clases de los componentes HTML sin generar hojas de estilo externas complejas, optimizando el rendimiento visual y la velocidad de desarrollo.
-* **React Router (v7):** Configura la navegación interna del sitio web como una *Single Page Application* (SPA). Al cambiar de pestaña, el enrutador recompone el DOM dinámicamente en el cliente sin realizar peticiones de recarga al navegador, garantizando una fluidez de navegación instantánea.
-* **Recharts (v3):** Librería gráfica nativa de React para la visualización estadística. Es fundamental para mapear las métricas de rendimiento ofensivo y evaluar de forma interactiva la evolución temporal del jugador.
-* **Simpleheat (Resolución del Reto de los Heatmaps):** se escogió **`simpleheat`**, una librería moderna y ligera creada por el equipo de Mapbox que dibuja nubes de densidad térmica directamente sobre un objeto `<canvas>` nativo de HTML5, respetando los estándares modernos de rendimiento y aislamiento de memoria.
+* **React (v19) + Vite (v8):** Se seleccionó React por su modelo de renderizado reactivo basado en componentes y estados dinámicos, ideal para paneles interactivos que cambian según las consultas del usuario. **Vite** se implementó como empaquetador debido a su arranque instantáneo mediante módulos ESM nativos y su *Hot Module Replacement* (HMR), lo que optimiza drásticamente los tiempos de desarrollo en comparación con herramientas clásicas como Webpack.
+* **Tailwind CSS (v4):** Toda la interfaz adopta una estética oscura de corte *gaming* (fondos `bg-slate-900`, textos contrastados y acentos neón `text-cyan-400` y `text-purple-500`). Tailwind permitió diseñar este estilo directamente mediante clases de utilidad en las etiquetas HTML, eliminando la necesidad de escribir y mantener archivos CSS gigantescos separados.
+* **React Router (v7):** Configura la navegación interna de la web como una *Single Page Application* (SPA). Al cambiar de pestaña, el enrutador recompone el DOM de forma local en el navegador del cliente sin realizar peticiones de recarga al servidor, garantizando una fluidez de navegación instantánea.
+* **Recharts (v3):** Librería de visualización de datos construida de forma nativa para React. Permite renderizar composiciones complejas de gráficas, fundamental para evaluar la evolución temporal del rendimiento del jugador mediante ejes cartesianos interactivos.
+* **Simpleheat (Resolución del Reto de los Heatmaps):** Originalmente, el plan de diseño estipulaba el uso de `heatmap.js`. Sin embargo, los navegadores modernos bloquean por seguridad la sobrescritura directa en memoria del buffer de píxeles en los Canvas (`ImageData.data`), provocando un error crítico de ejecución. Como solución, se migró a **`simpleheat`**, un motor ultra-ligero desarrollado por Mapbox que dibuja nubes de densidad térmica sobre etiquetas `<canvas>` nativas de HTML5 respetando los estándares modernos de aislamiento de memoria.
 
-##### **B. Estructura Modular del Código Fuente**
-El proyecto web se organiza de forma modular y desacoplada dentro del directorio `/frontend/src` para separar de forma nítida la UI de la lógica de red:
+##### **B. Estructura Modular del Código Fuente y Flujo de Datos**
 
-* `services/api.js` **(Capa de Aislamiento de Red):** Centraliza las peticiones asíncronas hacia la *Query API* a través de la API `fetch` nativa. Utiliza la variable de entorno `import.meta.env.VITE_API_URL` inyectada por Docker. Esta capa implementa un formateador basado en `URLSearchParams` para limpiar las consultas con filtros y centraliza el manejo de excepciones (HTTP 404 de jugador inexistente o 503 de caída de base de datos) mediante una función auxiliar `fetchWithError`, protegiendo a la interfaz de fallos no controlados.
-* `components/Layout.jsx` **(Marco de UI Persistente):** Define la estructura fija de la aplicación. Renderiza la barra de navegación superior (Navbar) equipada con enlaces dinámicos que se iluminan según la ruta activa detectada por el hook `useLocation`. Utiliza el componente `<Outlet />` de React Router para inyectar dinámicamente las páginas solicitadas dentro del contenedor principal sin reconstruir el menú de navegación.
-* `pages/Home.jsx` **(El Hub Central):** Actúa como puerta de acceso para los usuarios. Cuenta con un buscador que redirige de forma segura a la ruta dinámica del perfil de telemetría personal. Además, implementa un efecto de montado (`useEffect`) que interroga al endpoint `/metrics/global-summary` de la API para desplegar en tiempo real el estado del clúster y el volumen de partidas almacenadas.
-* `pages/PlayerTracker.jsx` **(Módulo de Retención y Competitividad):** Implementa el "Bloque 1" del plan analítico. Muestra el rendimiento del jugador procesado en PostgreSQL.
-* `pages/LabDashboard.jsx` **(Módulo de Investigación para Game Designers):** Implementa el "Bloque 2". Cruza métricas económicas globales mediante gráficos circulares y renderiza los mapas térmicos espaciales para el estudio del Level Design.
+El código fuente del frontend está organizado bajo una arquitectura modular y desacoplada dentro del directorio `/frontend/src`. A continuación, se detalla el propósito, la lógica y el código de cada archivo del ecosistema:
 
-##### **C. Implementación de Procesos Clave y Fragmentos de Código**
+```text
+/src
+├── /components
+│   └── Layout.jsx       # Marco de UI persistente y barra de navegación
+├── /pages
+│   ├── Home.jsx         # Panel de bienvenida, buscador y estado del clúster
+│   ├── PlayerTracker.jsx# Tracker individual del jugador (Métricas y Gráficas)
+│   └── LabDashboard.jsx # Panel para Game Designers (Filtros, tarta y Heatmaps duales)
+├── /services
+│   └── api.js           # Capa de aislamiento de red (Conector con Query API)
+├── App.jsx              # Configuración central de rutas y basename
+├── main.jsx             # Punto de entrada y montaje de la aplicación
+└── index.css            # Inyección de Tailwind CSS y estilos globales
 
-###### **1. Sincronización Asíncrona en Paralelo (`Promise.all`)**
-Para evitar la carga secuencial bloqueante, la pantalla del perfil del jugador unifica las llamadas a los microservicios relacionales ejecutándolas en paralelo. De este modo, la interfaz reduce el tiempo de espera al equivalente de la llamada más lenta:
+```
+
+---
+
+###### **1. `src/services/api.js` (El Enlace de Red y Consumo de Endpoints)**
+
+Este archivo es el único puente de comunicación entre la interfaz visual y la **Query API**. Centraliza el consumo de los endpoints relacionales en funciones limpias y asíncronas. Utiliza la variable de entorno `VITE_API_URL` expuesta por Docker y cuenta con un manejador de excepciones global (`fetchWithError`) que intercepta caídas de base de datos o códigos de error HTTP:
+
+```javascript
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8001/api/v1';
+
+async function fetchWithError(url) {
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`Error en la petición: ${response.status} ${response.statusText}`);
+    }
+    return response.json();
+}
+
+export const api = {
+    // === BLOQUE 1: TRACKER DEL JUGADOR ===
+    // Consume GET /players/{id} -> Trae el perfil consolidado histórico (K/D, precisión, TTL)
+    getPlayerProfile: (playerId) => 
+        fetchWithError(`${API_BASE_URL}/players/${playerId}`),
+
+    // Consume GET /players/{id}/sessions -> Historial paginado de partidas recientes
+    getPlayerSessions: (playerId, limit = 20, offset = 0) => 
+        fetchWithError(`${API_BASE_URL}/players/${playerId}/sessions?limit=${limit}&offset=${offset}`),
+
+    // Consume GET /players/{id}/progression -> Datos temporales partida a partida para la gráfica
+    getPlayerProgression: (playerId, limit = 50) => 
+        fetchWithError(`${API_BASE_URL}/players/${playerId}/progression?limit=${limit}`),
+
+    // === BLOQUE 2: ANÁLISIS / INVESTIGACIÓN (Game Designers) ===
+    // Consume GET /metrics/global-summary -> Total de sesiones registradas en el clúster
+    getGlobalSummary: () => 
+        fetchWithError(`${API_BASE_URL}/metrics/global-summary`),
+
+    // Consume GET /metrics/item-interactions -> Conteo global de ítems recogidos (Salud, Armas, Balas)
+    getItemInteractions: (playerId = null) => {
+        const url = playerId ? `${API_BASE_URL}/metrics/item-interactions?player_id=${playerId}` : `${API_BASE_URL}/metrics/item-interactions`;
+        return fetchWithError(url);
+    },
+
+    // Consume GET /heatmaps/deaths -> Coordenadas X/Z de muertes (Jugador e IA por defecto)
+    getDeathsHeatmap: (floorId = null, limit = 5000, includeAi = true) => {
+        const params = new URLSearchParams({ limit, include_ai_deaths: includeAi });
+        if (floorId !== null) params.append('floor_id', floorId);
+        return fetchWithError(`${API_BASE_URL}/heatmaps/deaths?${params.toString()}`);
+    },
+
+    // Consume GET /heatmaps/navigation -> Coordenadas X/Z periódicas de las rutas de movimiento
+    getNavigationHeatmap: (floorId = null, limit = 10000) => {
+        const params = new URLSearchParams({ limit });
+        if (floorId !== null) params.append('floor_id', floorId);
+        return fetchWithError(`${API_BASE_URL}/heatmaps/navigation?${params.toString()}`);
+    }
+};
+
+```
+
+---
+
+###### **2. `src/components/Layout.jsx` (El Marco Navegable Persistente)**
+
+Actúa como el caparazón visual de la web. Renderiza la barra superior de navegación (Navbar) que permanece visible en todo momento. Su lógica utiliza el hook `useLocation` para comprobar en tiempo real la ruta del navegador e iluminar dinámicamente la pestaña activa en color cian (Inicio) o púrpura (Laboratorio). Utiliza la etiqueta `<Outlet />` para inyectar las diferentes páginas de forma fluida:
 
 ```jsx
-// Fragmento de control de flujo asíncrono en PlayerTracker.jsx
+import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Crosshair, FlaskConical, Home } from 'lucide-react';
+
+export default function Layout() {
+  const location = useLocation();
+  const isActive = (path) => location.pathname === path;
+
+  return (
+    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans">
+      <nav className="sticky top-0 z-50 border-b border-slate-800 bg-slate-900/80 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Crosshair className="text-cyan-400 w-6 h-6" />
+            <span className="font-bold text-xl text-white">FPS<span className="text-cyan-400">.</span>STATS</span>
+          </div>
+          <div className="flex space-x-4">
+            <Link to="/" className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm ${isActive('/') ? 'bg-slate-800 text-cyan-400' : 'text-slate-300 hover:bg-slate-800'}`}>
+              <Home className="w-4 h-4" /> Inicio
+            </Link>
+            <Link to="/lab" className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm ${isActive('/lab') ? 'bg-slate-800 text-purple-400' : 'text-slate-300 hover:bg-slate-800'}`}>
+              <FlaskConical className="w-4 h-4" /> Lab (Devs)
+            </Link>
+          </div>
+        </div>
+      </nav>
+      <main className="max-w-7xl mx-auto px-4 py-8"><Outlet /></main>
+    </div>
+  );
+}
+
+```
+
+###### **3. `src/pages/Home.jsx` (El Hub de Entrada y Monitorización)**
+Es la pantalla de bienvenida de la aplicación. Actúa como puerta de acceso mediante un formulario de búsqueda con validación local que redirige al usuario hacia la ruta dinámica de su perfil de combate (`/player/ID_ELEGIDO`). 
+
+Paralelamente, para mantener informado al usuario sobre el estado del ecosistema, realiza una consulta en segundo plano para verificar la salud del servidor y el volumen de datos almacenados.
+
+> **🖥️ Interfaz de Usuario: Hub de Entrada**
+> *(Nota: Insertar aquí la captura de pantalla de la página Home)*
+> `![Vista del Home Hub](./ruta/a/tu/captura_home.png)`
+
+**Fragmentos de Lógica Clave:**
+```javascript
+// Verificación de la salud del clúster (Estado del servidor) en la carga inicial
+useEffect(() => {
+  api.getGlobalSummary()
+    .then(data => setGlobalStats(data))
+    .catch(err => console.error("Error conectando con la API:", err));
+}, []);
+
+// Redirección dinámica segura al perfil del jugador
+const handleSearch = (e) => {
+  e.preventDefault();
+  if (playerId.trim()) {
+      navigate(`/player/${playerId.trim()}`);
+  }
+};
+
+```
+
+###### **4. `src/pages/PlayerTracker.jsx` (El Tracker de Rendimiento Competitivo - Bloque 1)**
+
+Este módulo implementa el perfil público para los usuarios del juego. Su diseño técnico destaca por evitar las cargas en cascada (*Request Waterfalling*) al ejecutar consultas asíncronas en paralelo, y por el uso de Recharts para proyectar gráficas analíticas de doble eje.
+
+> **🖥️ Interfaz de Usuario: Panel del Jugador**
+> *(Nota: Insertar aquí la captura de pantalla de la página PlayerTracker, donde se vea bien la gráfica)*
+> `![Vista del Tracker del Jugador](./ruta/a/tu/captura_tracker.png)`
+
+**Fragmentos de Lógica Clave:**
+Para garantizar una experiencia fluida, la aplicación no espera a que cargue el perfil para pedir el historial; lanza las tres llamadas a la *Query API* de forma simultánea:
+
+```javascript
+// Ejecución simultánea de las consultas (Perfil, Progresión e Historial)
 useEffect(() => {
   setLoading(true);
-  setError(null);
-
-  // Ejecución simultánea de las consultas del Perfil, Curva de Progresión e Historial
   Promise.all([
     api.getPlayerProfile(id),
     api.getPlayerProgression(id),
-    api.getPlayerSessions(id, 10, 0) // Trae el subset de las últimas 10 sesiones
+    api.getPlayerSessions(id, 10, 0)
   ])
   .then(([profileData, progressionData, sessionsData]) => {
     setProfile(profileData);
@@ -1016,96 +1156,110 @@ useEffect(() => {
     setSessions(sessionsData);
     setLoading(false);
   })
-  .catch((err) => {
-    console.error(err);
-    setError("No se pudieron recuperar los registros del jugador. Verifique el ID único.");
-    setLoading(false);
-  });
+  .catch(() => setLoading(false));
 }, [id]);
 
 ```
 
-###### **2. Configuración de Gráficos Duales para Variables Heterogéneas**
-
-Para evaluar la **Hipótesis 3 (H3)**, se requiere correlacionar la evolución cronológica del ratio K/D (número entero abierto, M3.1) con la tasa de precisión (porcentaje cerrado entre 0 y 1, M3.2). Dado que sus escalas numéricas son incompatibles, se implementó en Recharts una configuración de **eje Y dual independiente** (`yAxisId="left"` y `yAxisId="right"`), permitiendo proyectar ambas tendencias en un único plano cartesiano legible para el usuario:
+Para validar la **Hipótesis 3 (H3)**, se configuró un eje Y izquierdo independiente para el ratio K/D (valores numéricos enteros) y un eje Y derecho específico para la precisión (porcentaje), permitiendo evaluar la correlación visual en la misma gráfica:
 
 ```jsx
-// Configuración de la composición del gráfico en Recharts
-<LineChart data={progression}>
-  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-  <XAxis dataKey="session_number" stroke="#64748b" tickFormatter={(v) => `Partida ${v}`} />
-  <YAxis yAxisId="left" stroke="#f43f5e" /> {/* Eje ofensivo para K/D */}
-  <YAxis yAxisId="right" orientation="right" stroke="#06b6d4" tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} /> {/* Eje de habilidad */}
-  <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155' }} />
-  <Line yAxisId="left" type="monotone" dataKey="kd_ratio" name="Ratio K/D" stroke="#f43f5e" strokeWidth={3} />
-  <Line yAxisId="right" type="monotone" dataKey="accuracy" name="Precisión %" stroke="#06b6d4" strokeWidth={2} />
-</LineChart>
+{/* Fragmento de configuración de ejes duales en Recharts */}
+<YAxis yAxisId="left" stroke="#f43f5e" /> {/* Eje ofensivo para K/D */}
+<YAxis yAxisId="right" orientation="right" stroke="#06b6d4" tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} /> {/* Eje de habilidad */}
+<Line yAxisId="left" type="monotone" dataKey="kd_ratio" name="Ratio K/D" stroke="#f43f5e" strokeWidth={3} />
+<Line yAxisId="right" type="monotone" dataKey="accuracy" name="Precisión %" stroke="#06b6d4" strokeWidth={2} />
 
 ```
 
-###### **3. El Desafío Espacial: Conversión Matemática de Coordenadas Unity -> Web Canvas**
+---
 
-El reto más complejo del frontend radicó en la incompatibilidad tridimensional. Unity registra la posición del avatar en un plano cartesiano flotante `X/Z` donde el origen `(0,0)` suele situarse en el baricentro de la escena física y el eje `Z+` apunta hacia el Norte. Por el contrario, la API de renderizado del navegador gestiona una matriz de píxeles estricta en 2D `X/Y`, donde el punto `(0,0)` se ancla rígidamente en la esquina superior izquierda del viewport y el eje `Y+` desciende verticalmente hacia el suelo de la pantalla.
+###### **5. `src/pages/LabDashboard.jsx` (El Laboratorio Analítico y Conversión Espacial - Bloque 2)**
 
-Para superponer con exactitud milimétrica los clústeres de mortalidad sobre la captura cenital estática del nivel (`/src/assets/mapa_base.png`), se diseñó un algoritmo de normalización lineal que calcula un factor de escala proporcional y corrige la inversión del eje de ordenadas:
+Es el panel científico diseñado exclusivamente para los *Game Designers*. Realiza dos funciones de control crítico:
 
-$$\text{scaleX} = \frac{\text{canvas.width}}{X_{\text{max}} - X_{\text{min}}}$$
+1. **Validación de la Economía (H4):** Consume las interacciones de objetos y las plasma en un gráfico de tarta dinámico.
+2. **El Desafío de la Traslación Espacial (M2.1 y M2.2):** Para superponer las coordenadas tridimensionales de Unity sobre un lienzo 2D en la web, implementa un algoritmo de conversión matricial que escala y ajusta los puntos térmicos sobre el mapa base (`mapa_base.png`).
 
-$$\text{scaleZ} = \frac{\text{canvas.height}}{Z_{\text{max}} - Z_{\text{min}}}$$
+> **🖥️ Interfaz de Usuario: Laboratorio y Heatmaps**
+> *(Nota: Insertar aquí la captura de pantalla de la página LabDashboard, donde se aprecie el mapa de calor)*
+> `![Vista del Laboratorio y Heatmap](./ruta/a/tu/captura_lab.png)`
 
-$$X_{\text{web}} = (X_{\text{unity}} - X_{\text{min}}) \times \text{scaleX}$$
+**Fragmentos de Lógica Clave:**
+La lógica principal del archivo es el mapeo dinámico entre los puntos crudos del backend y el *canvas* nativo del navegador, adaptando la saturación del rojo según si estamos visualizando muertes o tránsito de navegación:
 
-$$Y_{\text{web}} = \text{canvas.height} - \left[(Z_{\text{unity}} - Z_{\text{min}}) \times \text{scaleZ}\right]$$
-
-La implementación exacta de esta traslación espacial y su posterior inyección segura en la instancia de `simpleheat` quedó codificada en el dashboard analítico de la siguiente manera:
-
-```jsx
-// Bloque de transformación geométrica y pintado térmico en LabDashboard.jsx
+```javascript
 useEffect(() => {
-  if (!loading && mapContainerRef.current && heatmapPoints.length > 0) {
+  // Selección dinámica de la fuente de datos (Bajas vs Tránsito)
+  const activePoints = heatmapMode === 'deaths' ? deathPoints : navPoints;
+  
+  if (!loading && mapContainerRef.current && activePoints.length > 0) {
     const canvas = mapContainerRef.current;
-    
-    // Sincronización explícita de la resolución nativa interna con las dimensiones CSS en pantalla
-    canvas.width = canvas.clientWidth;
+    canvas.width = canvas.clientWidth; 
     canvas.height = canvas.clientHeight;
 
-    // Inicialización del motor gráfico bidimensional de simpleheat
-    const heat = simpleheat(canvas);
-    heat.radius(25, 15); // Configuración del radio del foco térmico y su desenfoque (blur)
+    const heat = simpleheat(canvas).radius(25, 15);
+    
+    // Cálculo de factores de escala según los límites físicos del escenario (Unity)
+    const scaleX = canvas.width / (UNITY_MAX_X - UNITY_MIN_X); 
+    const scaleZ = canvas.height / (UNITY_MAX_Z - UNITY_MIN_Z);
 
-    // Cálculo dinámico de factores de proporción según los límites reales del mapa en Unity
-    const unityWidth = UNITY_MAX_X - UNITY_MIN_X;
-    const unityHeight = UNITY_MAX_Z - UNITY_MIN_Z;
-    const scaleX = canvas.width / unityWidth;
-    const scaleZ = canvas.height / unityHeight;
-
-    // Mapeo adaptativo y conversión matricial de los eventos de muerte
-    const dataPoints = heatmapPoints.map(point => {
+    // Traslación matemática de puntos y corrección del eje Z hacia Y
+    const dataPoints = activePoints.map(point => {
       let xWeb = (point.x - UNITY_MIN_X) * scaleX;
-      let yWeb = canvas.height - ((point.z - UNITY_MIN_Z) * scaleZ); // Inversión del eje Z para alinear el Norte
-
-      return [
-        Math.floor(xWeb), 
-        Math.floor(yWeb), 
-        point.value || 1 // Intensidad o peso del evento de muerte
-      ];
+      let yWeb = canvas.height - ((point.z - UNITY_MIN_Z) * scaleZ); 
+      return [Math.floor(xWeb), Math.floor(yWeb), point.value || 1];
     });
 
-    // Inyección de datos filtrados y renderizado final sobre el lienzo de dibujo
     heat.data(dataPoints);
-    heat.max(5); // Umbral de saturación: 5 bajas concentradas saturan el gradiente a Rojo Intenso
+    // Control de saturación: El tránsito pisa muchas veces la misma zona (umbral 20), 
+    // mientras que las muertes son más dispersas (umbral 5)
+    heat.max(heatmapMode === 'deaths' ? 5 : 20); 
     heat.draw();
   }
-}, [loading, heatmapPoints]);
+}, [loading, heatmapMode, deathPoints, navPoints]);
+
+```
+###### **6. `src/App.jsx` (El Enrutador Central de la Aplicación)**
+
+Se encarga de configurar las rutas jerárquicas de la interfaz web. Envuelve todo el árbol de componentes bajo la etiqueta `<BrowserRouter>`. Para asegurar la compatibilidad con el entorno local de Docker, lee de forma dinámica la variable raíz del servidor, mapeando de forma segura qué vistas deben inyectarse dentro del contenedor principal (`Layout`) según la URL del navegador:
+
+```jsx
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
+import Home from './pages/Home';
+import PlayerTracker from './pages/PlayerTracker';
+import LabDashboard from './pages/LabDashboard';
+
+function App() {
+  return (
+    <BrowserRouter basename={import.meta.env.BASE_URL || '/'}>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="player/:id" element={<PlayerTracker />} />
+          <Route path="lab" element={<LabDashboard />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
 
 ```
 
-##### **D. Automatización y Despliegue con Docker (Explicación del Entorno Visual)**
+---
 
-Para garantizar que la página web funcione exactamente igual en el ordenador de cualquier usuario o evaluador, todo el sistema del frontend se ha empaquetado utilizando contenedores de **Docker**. A continuación, se explica de forma accesible cómo funciona esta integración:
+###### **7. `src/main.jsx` & `src/index.css` (Puntos de Entrada y Estética Global)**
+
+* **`main.jsx`:** Es el archivo raíz de JavaScript encargado de arrancar el motor de React. Captura el nodo `<div id="root">` del archivo HTML de la aplicación e inyecta en el árbol el enrutador centralizado envuelto bajo el modo estricto de depuración (`<StrictMode>`).
+* **`index.css`:** Realiza la inyección del núcleo de Tailwind CSS a través de la directiva `@import "tailwindcss";`. Configura una regla global sobre el cuerpo de la aplicación (`body`) aplicando mediante `@apply` las clases nativas `bg-slate-900` y `text-slate-100`, forzando a que cualquier página que se añada al ecosistema herede automáticamente el esquema cromático gaming y nocturno definido en el plan analítico.
+
+##### **C. Automatización y Despliegue con Docker (Explicación del Entorno Visual)**
+
+Para garantizar que la página web funcione exactamente igual en el ordenador de cualquier usuario o evaluador (evitando el clásico problema de "en mi ordenador sí funciona, pero en el tuyo no"), todo el sistema del frontend se ha empaquetado utilizando contenedores de **Docker**. A continuación, se explica de forma accesible cómo funciona esta integración:
 
 1. **Entorno Limpio e Independiente (Dockerfile):** Se configuró un "contenedor" (un entorno virtual aislado e independiente) que simula un miniordenador preconfigurado con Node.js. Al arrancar, este entorno descarga automáticamente todas las librerías necesarias de forma limpia y ejecuta el motor de la web (Vite). Finalmente, abre un canal de comunicación exclusivo (el puerto `5173`) para que podamos acceder a la interfaz desde cualquier navegador web usando `http://localhost:5173`.
-2. **Protección contra Conflictos del Sistema (Aislamiento de Librerías):** El ordenador físico desde el que trabajamos y el contenedor de Docker organizan sus archivos de forma interna muy diferente. Si las librerías de código de ambos sistemas se mezclaran directamente, la aplicación web se corrompería y dejaría de funcionar. Para evitar esto, se creó una "caja fuerte" de memoria protegida dentro de Docker exclusivamente para almacenar las librerías del proyecto (`node_modules`), garantizando la estabilidad y compatibilidad absoluta del sistema.
-3. **Actualización del Código en Vivo (Sincronización en Tiempo Real):** Se estableció un puente que conecta los archivos de nuestro ordenador con el contenedor de Docker. Gracias a esta conexión, cualquier cambio que realicemos en el diseño visual o en la lógica de las gráficas desde nuestro editor de texto se propaga al instante. La web del navegador se actualiza automáticamente en milisegundos sin necesidad de apagar, reconstruir o reiniciar los servidores, optimizando drásticamente la velocidad en las fases de prueba.
-
-```
+2. **Protección contra Conflictos del Sistema (Aislamiento de Librerías):** El ordenador físico desde el que trabajamos (Windows) y el contenedor de Docker (Linux) organizan sus archivos de forma interna muy diferente. Si las librerías de código de ambos sistemas se mezclaran directamente, la aplicación web se corrompería y dejaría de funcionar. Para evitar esto, se creó una "caja fuerte" de memoria protegida dentro de Docker exclusivamente para almacenar las librerías del proyecto (`node_modules`), garantizando la estabilidad y compatibilidad absoluta del sistema.
+3. **Actualización del Código en Vivo (Sincronización en Tiempo Real):** Se estableció un puente directo que conecta los archivos de nuestro ordenador con el contenedor de Docker. Gracias a esta conexión, cualquier cambio que realicemos en el diseño visual o en la lógica de las gráficas desde nuestro editor de texto se propaga al instante. La web del navegador se actualizará automáticamente en milisegundos sin necesidad de apagar, reconstruir o reiniciar los servidores, optimizando drásticamente la velocidad en las fases de prueba.
