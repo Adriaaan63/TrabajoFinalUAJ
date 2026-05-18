@@ -72,7 +72,7 @@ A través de este sistema, se tienen las siguientes expectativas:
 
 ### 3. Diseño e Implementación Técnica (Arquitectura Docker) <a name="3-dise%C3%B1o-e-implementaci%C3%B3n-t%C3%A9cnica-arquitectura-docker"></a>
 
-#### **1. Implementación del sistema de captura de eventos en el cliente Unity**
+#### **3.1. Implementación del sistema de captura de eventos en el cliente Unity**
 
 integrando el *Tracker* de telemetría con el framework Opsive Deathmatch AI Kit mediante el sistema de eventos nativos del motor.
 
@@ -98,7 +98,7 @@ Durante la integración se identificaron y resolvieron varias incompatibilidades
 
 ---
 
-#### **2. Implementación de la persistencia de Unity a Docker**
+#### **3.2. Implementación de la persistencia de Unity a Docker**
 
 Implementación del subsistema de persistencia desde Unity hacia la infraestructura Docker, así como en la definición del esqueleto de la base de datos y el motor de procesamiento de métricas.
 
@@ -122,7 +122,7 @@ A continuación, se detalla la continuación de la **Sección 3: Diseño e Imple
 
 ---
 
-#### **5. Implementación de la Capa de Visualización y Análisis Web (Frontend)**
+#### **3.5. Implementación de la Capa de Visualización y Análisis Web (Frontend)**
 
 La capa final de la arquitectura la constituye la aplicación web estática (SPA), un centro de mando analítico diseñado para interactuar de forma interactiva con los datos procesados en la infraestructura relacional.
 
