@@ -30,7 +30,7 @@
 3. [Diseño e Implementación Técnica (Arquitectura Docker)](#3-diseno)
 4. [Resultados Obtenidos (Validación Cuantitativa)](#4-resultados-obtenidos)
 5. [Conclusiones y Fricciones de Diseño Detectadas](#5-conclusiones-y-fricciones-de-diseño-detectadas)
-6. [Adenda: Registro Obligatorio de Reparto de Tareas](#-adenda-registro-obligatorio-de-reparto-de-tareas)
+6. [Adenda: Registro Obligatorio de Reparto de Tareas](#adenda-registro-obligatorio-de-reparto-de-tareas)
 
 ---
 
@@ -835,48 +835,12 @@ export const api = {
 
 ###### **2. `src/components/Layout.jsx` (El Marco Navegable Persistente)**
 
-Actúa como el caparazón visual de la web. Renderiza la barra superior de navegación (Navbar) que permanece visible en todo momento. Su lógica utiliza el hook `useLocation` para comprobar en tiempo real la ruta del navegador e iluminar dinámicamente la pestaña activa en color cian (Inicio) o púrpura (Laboratorio). Utiliza la etiqueta `<Outlet />` para inyectar las diferentes páginas de forma fluida:
-
-```jsx
-import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Crosshair, FlaskConical, Home } from 'lucide-react';
-
-export default function Layout() {
-  const location = useLocation();
-  const isActive = (path) => location.pathname === path;
-
-  return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans">
-      <nav className="sticky top-0 z-50 border-b border-slate-800 bg-slate-900/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Crosshair className="text-cyan-400 w-6 h-6" />
-            <span className="font-bold text-xl text-white">FPS<span className="text-cyan-400">.</span>STATS</span>
-          </div>
-          <div className="flex space-x-4">
-            <Link to="/" className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm ${isActive('/') ? 'bg-slate-800 text-cyan-400' : 'text-slate-300 hover:bg-slate-800'}`}>
-              <Home className="w-4 h-4" /> Inicio
-            </Link>
-            <Link to="/lab" className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm ${isActive('/lab') ? 'bg-slate-800 text-purple-400' : 'text-slate-300 hover:bg-slate-800'}`}>
-              <FlaskConical className="w-4 h-4" /> Lab (Devs)
-            </Link>
-          </div>
-        </div>
-      </nav>
-      <main className="max-w-7xl mx-auto px-4 py-8"><Outlet /></main>
-    </div>
-  );
-}
-
-```
+Actúa como el caparazón visual de la web. Renderiza la barra superior de navegación (Navbar) que permanece visible en todo momento. Su lógica utiliza el hook `useLocation` para comprobar en tiempo real la ruta del navegador e iluminar dinámicamente la pestaña activa en color cian (Inicio) o púrpura (Laboratorio). Utiliza la etiqueta `<Outlet />` para inyectar las diferentes páginas de forma fluida.
 
 ###### **3. `src/pages/Home.jsx` (El Hub de Entrada y Monitorización)**
 Es la pantalla de bienvenida de la aplicación. Actúa como puerta de acceso mediante un formulario de búsqueda con validación local que redirige al usuario hacia la ruta dinámica de su perfil de combate (`/player/ID_ELEGIDO`). 
 
 Paralelamente, para mantener informado al usuario sobre el estado del ecosistema, realiza una consulta en segundo plano para verificar la salud del servidor y el volumen de datos almacenados.
-
-> **Interfaz de Usuario: Hub de Entrada**
-![Vista del Home Hub](Assets/Docker/frontend/ImagenesWeb/Home.png)
 
 **Fragmentos de Lógica Clave:**
 ```javascript
@@ -900,9 +864,6 @@ const handleSearch = (e) => {
 ###### **4. `src/pages/PlayerTracker.jsx` (El Tracker de Rendimiento Competitivo - Bloque 1)**
 
 Este módulo implementa el perfil público para los usuarios del juego. Su diseño técnico destaca por evitar las cargas en cascada (*Request Waterfalling*) al ejecutar consultas asíncronas en paralelo, y por el uso de Recharts para proyectar gráficas analíticas de doble eje.
-
-> **Interfaz de Usuario: Panel del Jugador**
-![Vista del Tracker del Jugador](Assets/Docker/frontend/ImagenesWeb/PlayerTrack.png)
 
 **Fragmentos de Lógica Clave:**
 Para garantizar una experiencia fluida, la aplicación no espera a que cargue el perfil para pedir el historial; lanza las tres llamadas a la *Query API* de forma simultánea:
@@ -946,9 +907,6 @@ Es el panel científico diseñado exclusivamente para los *Game Designers*. Real
 
 1. **Validación de la Economía (H4):** Consume las interacciones de objetos y las plasma en un gráfico de tarta dinámico.
 2. **El Desafío de la Traslación Espacial (M2.1 y M2.2):** Para superponer las coordenadas tridimensionales de Unity sobre un lienzo 2D en la web, implementa un algoritmo de conversión matricial que escala y ajusta los puntos térmicos sobre el mapa base (`mapa_base.png`).
-
-> **Interfaz de Usuario: Laboratorio y Heatmaps**
-![Vista del Laboratorio y Heatmap](Assets/Docker/frontend/ImagenesWeb/Lab.png)
 
 **Fragmentos de Lógica Clave:**
 La lógica principal del archivo es el mapeo dinámico entre los puntos crudos del backend y el *canvas* nativo del navegador, adaptando la saturación del rojo según si estamos visualizando muertes o tránsito de navegación:
