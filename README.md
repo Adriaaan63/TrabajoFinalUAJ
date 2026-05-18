@@ -122,6 +122,296 @@ A continuación, se detalla la continuación de la **Sección 3: Diseño e Imple
 
 ---
 
+#### **3.3. Implementación del Motor Analítico y Procesamiento Asíncrono de Métricas (`metrics_worker/worker.py`)**
+
+La tercera capa de la arquitectura corresponde al sistema de procesamiento analítico asíncrono encargado de transformar los eventos crudos almacenados en MongoDB en métricas relacionales estructuradas listas para consumo desde la Query API y el frontend web.
+
+A diferencia de la API de ingesta, cuyo objetivo es maximizar velocidad de escritura, el worker implementa una etapa de consolidación y enriquecimiento de datos orientada a análisis cuantitativo, métricas longitudinales y generación de heatmaps espaciales.
+
+##### **A. Arquitectura de Procesamiento Desacoplado**
+
+El motor analítico se diseñó siguiendo una arquitectura basada en colas para desacoplar completamente el videojuego del procesamiento pesado de métricas:
+
+```text
+Unity
+  ↓
+Ingest API
+  ↓
+MongoDB (Raw Events)
+  ↓
+Redis Queue
+  ↓
+Metrics Worker
+  ↓
+PostgreSQL
+````
+
+El sistema utiliza Redis como intermediario FIFO entre la capa de ingesta y el motor de cálculo, permitiendo absorber ráfagas masivas de eventos sin bloquear la ejecución del juego ni la API principal.
+
+##### **B. Escucha Reactiva mediante Redis (`BLPOP`)**
+
+El worker permanece en escucha continua sobre la cola `sessions_to_process` utilizando la operación bloqueante `BLPOP`:
+
+```python
+item = redis_client.blpop(REDIS_QUEUE_KEY, timeout=5)
+```
+
+Este enfoque evita ciclos de polling activos y reduce el consumo innecesario de CPU mientras no existan sesiones pendientes.
+
+Cuando una nueva sesión es insertada por la Ingest API, Redis desbloquea inmediatamente el worker para iniciar el procesamiento.
+
+##### **C. Recuperación Automática tras Fallos (`recover_unprocessed`)**
+
+Para evitar pérdida de datos ante reinicios inesperados del sistema, el worker implementa un mecanismo de recuperación automática:
+
+```python
+recover_unprocessed()
+```
+
+Durante el arranque, el motor consulta MongoDB buscando documentos cuyo campo:
+
+```json
+"processed": true
+```
+
+no exista o sea falso. Todas las sesiones pendientes son reinyectadas automáticamente en Redis.
+
+Este mecanismo convierte la arquitectura en un sistema resiliente frente a:
+
+* Reinicios de Docker.
+* Caídas de PostgreSQL.
+* Reinicios de Redis.
+* Errores temporales de red.
+
+##### **D. Normalización y Limpieza de Eventos**
+
+Uno de los principales retos fue la heterogeneidad de estructuras enviadas desde Unity. Para resolverlo, se implementó un sistema de aplanado recursivo:
+
+```python
+flatten_events(raw)
+```
+
+La función admite:
+
+* Eventos individuales.
+* Arrays de eventos.
+* Arrays anidados arbitrariamente.
+
+De esta forma, el worker puede procesar cualquier estructura serializada desde el cliente sin modificar la lógica analítica.
+
+##### **E. Resolución Temporal y Ordenación Cronológica**
+
+Todos los eventos son normalizados temporalmente utilizando:
+
+```python
+parse_time(...)
+```
+
+El parser soporta:
+
+* Timestamps Unix.
+* Unix Miliseconds.
+* ISO8601.
+* Objetos `datetime`.
+
+Posteriormente, los eventos se ordenan cronológicamente:
+
+```python
+sorted_events = sorted(events, key=lambda e: get_event_time(e, now))
+```
+
+Esto permite reconstruir la secuencia exacta de gameplay independientemente del orden original de llegada.
+
+##### **F. Resolución Inteligente del `player_id`**
+
+El sistema implementa una estrategia jerárquica para identificar correctamente al jugador:
+
+1. Evento explícito `Player_Id`.
+2. Campo raíz `player_id` en MongoDB.
+3. Fallback automático al `session_id`.
+
+```python
+find_player_id_from_events(events)
+```
+
+Este diseño garantiza compatibilidad hacia atrás con sesiones antiguas y evita corrupción de datos históricos.
+
+##### **G. Cálculo de Métricas de Combate**
+
+El worker calcula automáticamente:
+
+* Número de kills.
+* Número de muertes.
+* Accuracy.
+* K/D Ratio.
+* Tiempo jugado.
+* Time-To-Live medio.
+* Número de objetos recogidos.
+
+###### **Derivación de kills mediante `AI_Death`**
+
+El sistema no utiliza un evento explícito `Player_Kill`. En su lugar, las bajas del jugador se infieren analizando eventos `AI_Death` cuyo `killer_id` coincide con el jugador activo:
+
+```python
+kills = sum(
+    1 for e in sorted_events
+    if event_type(e) == EVENT_AI_DEATH
+    and str(e.get("killer_id") or "") == player_id
+)
+```
+
+Esto reduce redundancia de eventos y evita inconsistencias entre sistemas cliente-servidor.
+
+###### **Cálculo de Accuracy**
+
+La precisión ofensiva se calcula mediante:
+
+```python
+accuracy = round(shots_hit / shots_fired, 4)
+```
+
+La métrica se almacena en formato decimal normalizado (`0.0 → 1.0`) para facilitar cálculos estadísticos posteriores.
+
+##### **H. Cálculo del Time-To-Live (TTL)**
+
+Para validar hipótesis relacionadas con frustración y agresividad de IA, el worker calcula automáticamente el tiempo de supervivencia del jugador entre eventos `Player_Spawn` y `Player_Death`:
+
+```python
+ttl_seconds = (
+    max(0.0, (occurred_at - last_spawn_at).total_seconds())
+)
+```
+
+Cada muerte almacena individualmente su TTL asociado, permitiendo construir histogramas de supervivencia desde PostgreSQL.
+
+##### **I. Construcción de Heatmaps Espaciales**
+
+El worker genera automáticamente estructuras espaciales listas para visualización térmica.
+
+###### **1. Heatmaps de Mortalidad (`death_events`)**
+
+Se almacenan:
+
+* Coordenadas X/Z.
+* Planta del mapa.
+* Killer.
+* Tipo de muerte.
+* TTL asociado.
+
+Estas métricas permiten detectar:
+
+* Choke points.
+* Zonas peligrosas.
+* Desequilibrios de navegación.
+
+###### **2. Heatmaps de Navegación (`position_events`)**
+
+Los eventos `Player_Position_Heartbeat` registran la posición periódica del jugador:
+
+```python
+EVENT_POSITION = "Player_Position_Heartbeat"
+```
+
+Esto permite reconstruir rutas reales de navegación y detectar áreas ignoradas del mapa.
+
+###### **3. Economía de Recursos (`item_events`)**
+
+Las recogidas de objetos se almacenan individualmente:
+
+```python
+EVENT_ITEM = "Item_Picked"
+```
+
+permitiendo estudiar el comportamiento económico de los jugadores sobre:
+
+* Munición.
+* Curación.
+* Armamento.
+
+##### **J. Persistencia Relacional y Sistema UPSERT**
+
+El worker consolida toda la información en PostgreSQL mediante múltiples tablas analíticas:
+
+| Tabla             | Función                          |
+| ----------------- | -------------------------------- |
+| `player_stats`    | Estadísticas globales acumuladas |
+| `session_stats`   | Resumen por sesión               |
+| `death_events`    | Heatmaps de mortalidad           |
+| `position_events` | Heatmaps de navegación           |
+| `item_events`     | Economía de recursos             |
+
+La actualización histórica se realiza mediante operaciones UPSERT:
+
+```sql
+ON CONFLICT (player_id) DO UPDATE SET
+```
+
+Esto permite:
+
+* Acumular sesiones.
+* Recalcular medias globales.
+* Mantener consistencia temporal.
+* Evitar duplicados.
+
+##### **K. Prevención de Duplicados y Consistencia**
+
+Antes de persistir eventos, el sistema verifica si la sesión ya existe:
+
+```python
+if result.rowcount == 0:
+```
+
+Si la sesión ya fue procesada previamente:
+
+* No se vuelven a sumar estadísticas.
+* No se insertan eventos repetidos.
+* No se recalculan métricas históricas.
+
+Esto garantiza consistencia analítica incluso bajo reintentos automáticos.
+
+##### **L. Gestión Robusta de Errores**
+
+El worker implementa un sistema de reintentos con backoff exponencial:
+
+```python
+retry_with_backoff(...)
+```
+
+permitiendo tolerar:
+
+* Caídas temporales de PostgreSQL.
+* Timeouts de red.
+* Desconexiones del pool SQLAlchemy.
+
+Además, el engine SQL utiliza:
+
+```python
+pool_pre_ping=True
+pool_recycle=1800
+```
+
+para detectar conexiones muertas automáticamente y reciclar conexiones antiguas.
+
+##### **M. Integración Completa con Docker**
+
+El motor analítico se ejecuta como un contenedor independiente dentro del clúster Docker:
+
+* `metrics-worker`
+* `redis-server`
+* `ingest-api`
+* `query-api`
+
+La comunicación entre servicios se realiza mediante red interna Docker, garantizando:
+
+* Modularidad.
+* Escalabilidad horizontal.
+* Reproducibilidad del entorno.
+* Despliegue portable.
+
+En conjunto, esta capa transforma eventos aislados de gameplay en conocimiento analítico estructurado listo para explotación visual y validación cuantitativa de hipótesis de diseño.
+
+---
+
 #### **3.5. Implementación de la Capa de Visualización y Análisis Web (Frontend)**
 
 La capa final de la arquitectura la constituye la aplicación web estática (SPA), un centro de mando analítico diseñado para interactuar de forma interactiva con los datos procesados en la infraestructura relacional.
