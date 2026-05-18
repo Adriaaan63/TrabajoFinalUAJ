@@ -407,22 +407,9 @@ def build_session_metrics(session: dict[str, Any]) -> dict[str, Any]:
             continue
 
         if ev_type == EVENT_AI_DEATH:
-            # Muertes de agentes IA. No murio un jugador, asi que player_id queda NULL
-            # y ttl_seconds no aplica. Se guardan para el heatmap de mortalidad (M2.2)
-            # con is_ai=True para poder filtrarlas desde la Query API.
-            pos_x, pos_z, floor_id = get_pos(event)
-            if pos_x is not None and pos_z is not None:
-                death_rows.append({
-                    "session_id": session_id,
-                    "player_id": None,
-                    "pos_x": pos_x,
-                    "pos_z": pos_z,
-                    "floor_id": floor_id,
-                    "killer_id": (str(event.get("killer_id"))[:64] if event.get("killer_id") else None),
-                    "is_ai": True,
-                    "ttl_seconds": None,
-                    "occurred_at": occurred_at,
-                })
+            # Ignoramos las muertes de IA: no se guardan en death_events
+            # ni cuentan como muertes del jugador. Solo se usan mas arriba
+            # para derivar las kills (cuando killer_id == player_id).
             continue
 
         if ev_type == EVENT_POSITION:
