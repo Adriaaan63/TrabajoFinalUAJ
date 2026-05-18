@@ -72,9 +72,9 @@ A través de este sistema, se tienen las siguientes expectativas:
 
 ### 3. Diseño e Implementación Técnica (Arquitectura Docker) <a name="3-dise%C3%B1o-e-implementaci%C3%B3n-t%C3%A9cnica-arquitectura-docker"></a>
 
-* **Marcos Pantoja Rafael de la Cruz**
+* **1. Implementación del sistema de captura de eventos en el cliente Unity**
 
-Mi contribución  se centró en la implementación del sistema de captura de eventos en el cliente Unity, integrando el *Tracker* de telemetría con el framework Opsive Deathmatch AI Kit mediante el sistema de eventos nativos del motor.
+integrando el *Tracker* de telemetría con el framework Opsive Deathmatch AI Kit mediante el sistema de eventos nativos del motor.
 
 **Definición del diccionario de eventos (`GameplayEvents.cs`)**
 
