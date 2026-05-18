@@ -26,8 +26,8 @@
 ## ÍNDICE DE LA MEMORIA
 
 1. [Breve Resumen del Trabajo](#1-breve-resumen-del-trabajo)
-2. [Objetivos e Hipótesis de Evaluación](#2-objetivos-e-hip%C3%B3tesis-de-evaluaci%C3%B3n)
-3. [Diseño e Implementación Técnica (Arquitectura Docker)](#3-dise%C3%B1o-e-implementaci%C3%B3n-t%C3%A9cnica-arquitectura-docker)
+2. [Objetivos e Hipótesis de Evaluación](#2-objetivos)
+3. [Diseño e Implementación Técnica (Arquitectura Docker)](#3-diseno)
 4. [Resultados Obtenidos (Validación Cuantitativa)](#4-resultados-obtenidos-validaci%C3%B3n-cuantitativa)
 5. [Conclusiones y Fricciones de Diseño Detectadas](#5-conclusiones-y-fricciones-de-dise%C3%B1o-detectadas)
 6. [Adenda: Registro Obligatorio de Reparto de Tareas](#-adenda-registro-obligatorio-de-reparto-de-tareas)
@@ -46,7 +46,7 @@ Esta interfaz se divide en dos módulos: el "Tracker del Jugador", que incentiva
 
 ---
 
-### 2. Objetivos
+### 2. Objetivos <a name="2-objetivos"></a>
 
 En esta sección se detalla el propósito fundamental del proyecto, los objetivos técnicos y analíticos perseguidos, su integración con los conceptos teóricos de la asignatura y las expectativas establecidas para la validación del sistema.
 
@@ -70,7 +70,7 @@ A través de este sistema, se tienen las siguientes expectativas:
 * **Identificar fallos de Level Design:** Se espera que la renderización de las métricas espaciales revele de forma visual e inequívoca los cuellos de botella del nivel (*choke points*) y áreas desaprovechadas, evidenciando si el mapa guía correctamente la acción.
 * **Validación de escalabilidad:** Se espera probar que una arquitectura desacoplada basada en colas (Redis) y procesamiento asíncrono (Worker) es capaz de soportar la ingesta masiva de eventos típica de una fase de *Beta testing* real.
 
-### 3. Diseño e Implementación Técnica (Arquitectura Docker) <a name="3-dise%C3%B1o-e-implementaci%C3%B3n-t%C3%A9cnica-arquitectura-docker"></a>
+### 3. Diseño e Implementación Técnica (Arquitectura Docker) <a name="3-diseno"></a>
 
 #### 3.1. Implementación del sistema de captura de eventos en el cliente Unity
 
@@ -1182,7 +1182,7 @@ Paralelamente, para mantener informado al usuario sobre el estado del ecosistema
 
 > **🖥️ Interfaz de Usuario: Hub de Entrada**
 > *(Nota: Insertar aquí la captura de pantalla de la página Home)*
-> `![Vista del Home Hub](./ruta/a/tu/captura_home.png)`
+![Vista del Home Hub](Assets/Docker/frontend/ImagenesWeb/Home.png)
 
 **Fragmentos de Lógica Clave:**
 ```javascript
@@ -1209,7 +1209,7 @@ Este módulo implementa el perfil público para los usuarios del juego. Su dise�
 
 > **🖥️ Interfaz de Usuario: Panel del Jugador**
 > *(Nota: Insertar aquí la captura de pantalla de la página PlayerTracker, donde se vea bien la gráfica)*
-> `![Vista del Tracker del Jugador](./ruta/a/tu/captura_tracker.png)`
+![Vista del Tracker del Jugador](Assets/Docker/frontend/ImagenesWeb/PlayerTrack.png)
 
 **Fragmentos de Lógica Clave:**
 Para garantizar una experiencia fluida, la aplicación no espera a que cargue el perfil para pedir el historial; lanza las tres llamadas a la *Query API* de forma simultánea:
@@ -1256,7 +1256,7 @@ Es el panel científico diseñado exclusivamente para los *Game Designers*. Real
 
 > **🖥️ Interfaz de Usuario: Laboratorio y Heatmaps**
 > *(Nota: Insertar aquí la captura de pantalla de la página LabDashboard, donde se aprecie el mapa de calor)*
-> `![Vista del Laboratorio y Heatmap](./ruta/a/tu/captura_lab.png)`
+![Vista del Laboratorio y Heatmap](Assets/Docker/frontend/ImagenesWeb/Lab.png)`
 
 **Fragmentos de Lógica Clave:**
 La lógica principal del archivo es el mapeo dinámico entre los puntos crudos del backend y el *canvas* nativo del navegador, adaptando la saturación del rojo según si estamos visualizando muertes o tránsito de navegación:
