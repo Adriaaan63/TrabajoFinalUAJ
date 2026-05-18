@@ -137,8 +137,6 @@ Se implementó el endpoint `POST /upload_session`, que era inexistente en el có
 
 Se reescribió el worker desde el esqueleto vacío original hasta una implementación funcional completa. El worker escucha la cola Redis mediante `blpop` bloqueante, recupera la sesión de MongoDB por su `_id`, calcula las métricas de juego filtrando eventos por tipo y ejecuta un UPSERT en PostgreSQL que acumula estadísticas entre sesiones del mismo jugador con una media de precisión ponderada por número de partidas.
 
-A continuación, se detalla la continuación de la **Sección 3: Diseño e Implementación Técnica**, centrada específicamente en la **Capa de Visualización y Análisis Web (Frontend)**. Este bloque está completamente desarrollado y estructurado en Markdown, utilizando terminología avanzada de ingeniería de software y analítica de juegos, incluyendo fragmentos de código críticos, listo para copiar y pegar directamente en tu archivo `README.md`.
-
 ---
 
 #### **3.3. Implementación del Motor Analítico y Procesamiento Asíncrono de Métricas (`metrics_worker/worker.py`)**
@@ -235,9 +233,9 @@ En conjunto, esta capa convierte los eventos crudos generados en Unity en métri
 
 #### **3.4. Implementación de la Capa de Consulta y Servicio de Datos (`query_api/`)**
 
-La Query API constituye la cuarta capa de la arquitectura y actúa como un microservicio de solo lectura encargado de exponer las métricas procesadas almacenadas en PostgreSQL. Mientras la Ingest API almacena eventos crudos y el Metrics Worker transforma esos eventos en métricas analíticas, esta capa convierte los datos relacionales en respuestas JSON estructuradas listas para ser consumidas desde el frontend y el dashboard de investigación. :contentReference[oaicite:0]{index=0}
+La Query API constituye la cuarta capa de la arquitectura y actúa como un microservicio de solo lectura encargado de exponer las métricas procesadas almacenadas en PostgreSQL. Mientras la Ingest API almacena eventos crudos y el Metrics Worker transforma esos eventos en métricas analíticas, esta capa convierte los datos relacionales en respuestas JSON estructuradas listas para ser consumidas desde el frontend y el dashboard de investigación.
 
-El sistema se diseñó explícitamente como una API de solo lectura, eliminando la necesidad de transacciones complejas o lógica de escritura concurrente. Esto simplifica la arquitectura, reduce la superficie de fallo y mejora el rendimiento general de las consultas. :contentReference[oaicite:1]{index=1}
+El sistema se diseñó explícitamente como una API de solo lectura, eliminando la necesidad de transacciones complejas o lógica de escritura concurrente. Esto simplifica la arquitectura, reduce la superficie de fallo y mejora el rendimiento general de las consultas.
 
 ---
 
@@ -256,7 +254,7 @@ La aplicación se organiza de forma modular separando responsabilidades entre di
 | `routers/metrics.py` | Métricas agregadas |
 | `routers/health.py` | Monitorización del servicio |
 
-Cada router agrupa endpoints relacionados y se monta bajo el prefijo común `/api/v1`, mientras que el endpoint `/health` permanece fuera del prefijo para facilitar monitorización externa desde Docker. :contentReference[oaicite:2]{index=2}
+Cada router agrupa endpoints relacionados y se monta bajo el prefijo común `/api/v1`, mientras que el endpoint `/health` permanece fuera del prefijo para facilitar monitorización externa desde Docker.
 
 ---
 
@@ -546,10 +544,6 @@ El contenedor:
 
 Esto garantiza aislamiento, reproducibilidad y monitorización automática dentro de la arquitectura distribuida del proyecto. 
 
----
-
-En conjunto, esta capa transforma la base de datos relacional generada por el worker en una API REST segura, modular y autodocumentada, capaz de alimentar tanto el frontend competitivo del jugador como el dashboard analítico utilizado para validar hipótesis de diseño y comportamiento.
-
 --- 
 
 #### **3.5. Implementación de la Capa de Visualización y Análisis Web (Frontend)** <a name="3-implementacion-de-la-capa-de-visualizacion-y-analisis-web-frontend"></a>
@@ -676,7 +670,7 @@ const handleSearch = (e) => {
 
 ###### **4. `src/pages/PlayerTracker.jsx` (El Tracker de Rendimiento Competitivo - Bloque 1)**
 
-Este módulo implementa el perfil público para los usuarios del juego. Su diseño técnico destaca por evitar las cargas en cascada (*Request Waterfalling*) al ejecutar consultas asíncronas en paralelo, y por el uso de Recharts para proyectar gráficas analíticas de doble eje.
+Este módulo implementa el perfil público para los usuarios del juego. Su diseño técnico destaca por evitar las cargas en cascada al ejecutar consultas asíncronas en paralelo, y por el uso de Recharts para proyectar gráficas analíticas de doble eje.
 
 **Fragmentos de Lógica Clave:**
 Para garantizar una experiencia fluida, la aplicación no espera a que cargue el perfil para pedir el historial; lanza las tres llamadas a la *Query API* de forma simultánea:
@@ -815,7 +809,8 @@ El primer gran resultado del ecosistema es la validación de la **Hipótesis 3 (
 Al inspeccionar el perfil del jugador "Paco", el sistema extrae de PostgreSQL sus métricas consolidadas a lo largo de sus sesiones de combate, reflejando su ratio de bajas/muertes (K/D, M3.1) y su tasa de acierto físico de disparos (Precisión, M3.2).
 
 > **Interfaz de Usuario: Panel de Telemetría Personal (Jugador: paco)**
-> <img src="Assets/Docker/frontend/ImagenesWeb/PlayerTrack.png" width="50%">
+
+ <img src="Assets/Docker/frontend/ImagenesWeb/PlayerTrack.png" width="50%">
 
 **Hallazgos Analíticos:**
 * **Evolución de la curva de aprendizaje (M3.1 y M3.2):** Como se aprecia en la gráfica cartesiana dual, en las primeras tres sesiones del historial ("Partida 1" a "Partida 3"), el jugador registra un ratio K/D inferior a `0.60` y una precisión que apenas roza el `15%`. Este rendimiento inicial deficiente correlaciona con la fase de aclimatación al esquema de control de Opsive.
@@ -832,13 +827,15 @@ El núcleo de la investigación orientada a *Game Designers* reside en la resolu
 Este mapa de calor registra las coordenadas exactas $(X, Z)$ donde ocurren los eventos de muerte, incluyendo tanto las eliminaciones sufridas por el jugador humano como las bajas infligidas a los agentes de Inteligencia Artificial de Opsive (parámetro `includeAi=true` activado de forma nativa por el frontend).
 
 > **Laboratorio de Hipótesis: Mapa Térmico de Mortalidad (M2.2)**
-> <img src="Assets/Docker/frontend/ImagenesWeb/Lab.png" width="50%">
+
+<img src="Assets/Docker/frontend/ImagenesWeb/Lab.png" width="50%">
 
 ##### **B. Distribución Espacial de Navegación (M2.1 - Modo Tránsito)**
 Este mapa de calor procesa las coordenadas de posición emitidas automáticamente por la corutina del cliente cada 5 segundos de juego vivo (`Player_Position_Heartbeat`), permitiendo mapear el flujo de movimiento e itinerarios preferidos por los usuarios.
 
 > **Laboratorio de Hipótesis: Mapa Térmico de Navegación y Tránsito (M2.1)**
-> <img src="Assets/Docker/frontend/ImagenesWeb/Transito.png" width="50%">
+
+<img src="Assets/Docker/frontend/ImagenesWeb/Transito.png" width="50%">
 
 **Hallazgos Analíticos y Cruce de Datos:**
 * **Validación de H2 (Cuellos de Botella):** Al contrastar ambos mapas, se observa un fenómeno de divergencia espacial crítico. El mapa térmico de navegación (Tránsito) revela que los jugadores novatos se desplazan de forma masiva por los pasillos periféricos y zonas exteriores del nivel buscando la cobertura de las paredes estructurales. Sin embargo, el mapa térmico de mortalidad (Bajas) revela que el `80%` de las muertes se concentran en tres puntos geográficos específicos: las puertas de acceso central y las intersecciones de pasillos internos (*choke points*). Esto **convalida la Hipótesis 2**: los jugadores buscan rutas periféricas seguras debido al miedo al combate, pero el diseño de interconexión central del nivel los fuerza a atravesar embudos de alta letalidad que actúan como cuellos de botella imprevistos.
