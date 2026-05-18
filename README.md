@@ -141,7 +141,7 @@ A continuación, se detalla la continuación de la **Sección 3: Diseño e Imple
 
 ---
 
-#### **3.3. Implementación del Motor Analítico y Procesamiento Asíncrono de Métricas (`metrics_worker/worker.py`)** <a name="3-dise%C3%B1o-e-implementaci%C3%B3n-t%C3%A9cnica-arquitectura-docker"></a>
+#### **3.3. Implementación del Motor Analítico y Procesamiento Asíncrono de Métricas (`metrics_worker/worker.py`)** <a name="3-arquitectura-docker"></a>
 
 La tercera capa de la arquitectura corresponde al sistema de procesamiento analítico asíncrono encargado de transformar los eventos crudos almacenados en MongoDB en métricas relacionales estructuradas listas para consumo desde la Query API y el frontend web.
 
@@ -431,7 +431,7 @@ En conjunto, esta capa transforma eventos aislados de gameplay en conocimiento a
 
 ---
 ---
-#### **3.4. Implementación de la Capa de Consulta y Servicio de Datos (`query_api/`)** <a name="3-dise%C3%B1o-e-implementaci%C3%B3n-t%C3%A9cnica-arquitectura-docker"></a>
+#### **3.4. Implementación de la Capa de Consulta y Servicio de Datos (`query_api/`)** <a name="3-arquitectura-docker1"></a>
 
 La cuarta capa de la arquitectura corresponde al microservicio de lectura encargado de exponer al mundo exterior los agregados relacionales que el motor analítico ha consolidado en PostgreSQL. Mientras que la Ingest API se especializa en absorber escrituras y el worker se centra en transformar datos crudos en métricas, la Query API adopta un rol exclusivamente de servicio: traduce filas de PostgreSQL en respuestas JSON estructuradas, validadas y autodocumentadas, listas para ser consumidas tanto por el frontend del jugador como por el dashboard interno de investigación.
 
@@ -1322,11 +1322,11 @@ De acuerdo con las directrices éticas y académicas establecidas en el enunciad
   * **Detalle:** Desarrollo de la clase de acumulación en memoria y envío HTTP (`DockerPersistence.cs`), extensión de la interfaz de configuración del tracker en Unity y fallback de seguridad local.
 
 * **Miguel Ángel López Muñoz**
-  * **Contribución Técnica:** [3.3. API de Ingesta, Respaldo NoSQL (MongoDB) y Mensajería (Redis)](#3-dise%C3%B1o-e-implementaci%C3%B3n-t%C3%A9cnica-arquitectura-docker)
+  * **Contribución Técnica:** [3.3. API de Ingesta, Respaldo NoSQL (MongoDB) y Mensajería (Redis)](#3-arquitectura-docker)
   * **Detalle:** Creación del endpoint asíncrono `/upload_session` en FastAPI, estructuración del almacenamiento en crudo (*Data Lake*) en MongoDB Atlas y gestión de la cola en memoria mediante Redis.
 
 * **Marcos Pérez Martínez**
-  * **Contribución Técnica:** [3.4. Motor de Procesamiento Métrico y Almacenamiento Relacional](#3-dise%C3%B1o-e-implementaci%C3%B3n-t%C3%A9cnica-arquitectura-docker)
+  * **Contribución Técnica:** [3.4. Motor de Procesamiento Métrico y Almacenamiento Relacional](#3-arquitectura-docker1)
   * **Detalle:** Programación del `metrics_worker` en Python para el vaciado de colas, computación estadística agregada de precisión y ratios mediante Pandas, y diseño del esquema e índices en PostgreSQL (Supabase).
 
 * **Adrián Castellanos Ormeño**
