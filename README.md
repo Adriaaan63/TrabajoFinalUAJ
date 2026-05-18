@@ -1181,7 +1181,6 @@ Es la pantalla de bienvenida de la aplicación. Actúa como puerta de acceso med
 Paralelamente, para mantener informado al usuario sobre el estado del ecosistema, realiza una consulta en segundo plano para verificar la salud del servidor y el volumen de datos almacenados.
 
 > **🖥️ Interfaz de Usuario: Hub de Entrada**
-> *(Nota: Insertar aquí la captura de pantalla de la página Home)*
 ![Vista del Home Hub](Assets/Docker/frontend/ImagenesWeb/Home.png)
 
 **Fragmentos de Lógica Clave:**
@@ -1208,7 +1207,6 @@ const handleSearch = (e) => {
 Este módulo implementa el perfil público para los usuarios del juego. Su diseño técnico destaca por evitar las cargas en cascada (*Request Waterfalling*) al ejecutar consultas asíncronas en paralelo, y por el uso de Recharts para proyectar gráficas analíticas de doble eje.
 
 > **🖥️ Interfaz de Usuario: Panel del Jugador**
-> *(Nota: Insertar aquí la captura de pantalla de la página PlayerTracker, donde se vea bien la gráfica)*
 ![Vista del Tracker del Jugador](Assets/Docker/frontend/ImagenesWeb/PlayerTrack.png)
 
 **Fragmentos de Lógica Clave:**
@@ -1255,7 +1253,6 @@ Es el panel científico diseñado exclusivamente para los *Game Designers*. Real
 2. **El Desafío de la Traslación Espacial (M2.1 y M2.2):** Para superponer las coordenadas tridimensionales de Unity sobre un lienzo 2D en la web, implementa un algoritmo de conversión matricial que escala y ajusta los puntos térmicos sobre el mapa base (`mapa_base.png`).
 
 > **🖥️ Interfaz de Usuario: Laboratorio y Heatmaps**
-> *(Nota: Insertar aquí la captura de pantalla de la página LabDashboard, donde se aprecie el mapa de calor)*
 ![Vista del Laboratorio y Heatmap](Assets/Docker/frontend/ImagenesWeb/Lab.png)`
 
 **Fragmentos de Lógica Clave:**
