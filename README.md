@@ -72,6 +72,8 @@ A través de este sistema, se tienen las siguientes expectativas:
 
 ### 3. Diseño e Implementación Técnica (Arquitectura Docker) <a name="3-diseno"></a>
 
+> Repositorio: https://github.com/Adriaaan63/TrabajoFinalUAJ.git
+
 #### 3.1. Implementación del sistema de captura de eventos en el cliente Unity
 
 Integrando el *Tracker* de telemetría con el framework Opsive Deathmatch AI Kit mediante el sistema de eventos nativos del motor.
@@ -1306,3 +1308,31 @@ Pese a la robustez del sistema, se han identificado márgenes de mejora para fut
 * **Dependencia crítica del cierre de sesión:** Actualmente, el cliente de Unity acumula los datos en un `StringBuilder` y los envía en el evento `OnApplicationQuit`. Si el juego sufre un *crash* (cierre inesperado), la sesión completa se pierde. Como trabajo futuro, se propone implementar envíos en lotes (*batching*) cada minuto o cada vez que el jugador muera.
 * **Ausencia de Autenticación:** El sistema actual confía en cadenas de texto manuales introducidas por el jugador. A futuro, se requiere un sistema de *Login* real (ej. JWT o API Keys) para evitar que usuarios maliciosos inyecten telemetría falsa en los identificadores de otros jugadores.
 * **Significancia Estadística:** Aunque los datos actuales trazan tendencias muy claras sobre el diseño del nivel, las conclusiones definitivas requerirán una fase de *Beta testing* a mayor escala con una muestra de jugadores mucho más amplia.
+
+### 6. Adenda: Registro Obligatorio de Reparto de Tareas <a name="adenda-registro-obligatorio-de-reparto-de-tareas"></a>
+
+De acuerdo con las directrices éticas y académicas establecidas en el enunciado de la asignatura, se certifica a continuación la contribución exacta, el módulo técnico desarrollado y el área documental asumida por cada uno de los integrantes del equipo de trabajo:
+
+* **Marcos Pantoja Rafael de la Cruz**
+  * **Contribución Técnica:** [3.1. Implementación del Sistema de Captura de Eventos en el Cliente Unity](#1-implementacion-del-sistema-de-captura-de-eventos-en-el-cliente-unity)
+  * **Detalle:** Desarrollo del diccionario de eventos (`GameplayEvents.cs`), hooks de captura del jugador y de la IA, y resolución de incompatibilidades con las firmas del framework Opsive.
+
+* **Sergio Pérez Robledano**
+  * **Contribución Técnica:** [3.2. Implementación de la Persistencia de Unity a Docker](#2-implementacion-de-la-persistencia-de-unity-a-docker)
+  * **Detalle:** Desarrollo de la clase de acumulación en memoria y envío HTTP (`DockerPersistence.cs`), extensión de la interfaz de configuración del tracker en Unity y fallback de seguridad local.
+
+* **Miguel Ángel López Muñoz**
+  * **Contribución Técnica:** [3.3. API de Ingesta, Respaldo NoSQL (MongoDB) y Mensajería (Redis)](#3-dise%C3%B1o-e-implementaci%C3%B3n-t%C3%A9cnica-arquitectura-docker)
+  * **Detalle:** Creación del endpoint asíncrono `/upload_session` en FastAPI, estructuración del almacenamiento en crudo (*Data Lake*) en MongoDB Atlas y gestión de la cola en memoria mediante Redis.
+
+* **Marcos Pérez Martínez**
+  * **Contribución Técnica:** [3.4. Motor de Procesamiento Métrico y Almacenamiento Relacional](#3-dise%C3%B1o-e-implementaci%C3%B3n-t%C3%A9cnica-arquitectura-docker)
+  * **Detalle:** Programación del `metrics_worker` en Python para el vaciado de colas, computación estadística agregada de precisión y ratios mediante Pandas, y diseño del esquema e índices en PostgreSQL (Supabase).
+
+* **Adrián Castellanos Ormeño**
+  * **Contribución Técnica:** [3.5. Implementación de la Capa de Visualización y Análisis Web (Frontend)](#3-implementacion-de-la-capa-de-visualizacion-y-analisis-web-frontend)
+  * **Detalle:** Desarrollo de la SPA en React + Vite, enrutamiento local con React Router, gráficas dinámicas cartesianas de eje dual en Recharts y el lienzo interactivo de mapas de calor duales mediante `simpleheat`.
+
+---
+
+> **Compromiso de Coautoría:** > Todos los miembros firmantes han participado activamente tanto en el despliegue de la infraestructura de software como en la validación analítica de las hipótesis del proyecto, reflejando de forma fidedigna sus aportaciones en el historial de commits del repositorio centralizado.
