@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
-// NUEVO: Añadimos iconos de Skull y Footprints para los botones
 import { Target, Package, Crosshair, Map as MapIcon, Loader2, Skull, Footprints } from 'lucide-react';
 import simpleheat from 'simpleheat';
 import { api } from '../services/api';
