@@ -80,81 +80,25 @@ Integrando el *Tracker* de telemetría con el framework Opsive Deathmatch AI Kit
 
 Se diseñaron e implementaron todas las clases de evento de gameplay del proyecto, cada una extendiendo la clase base `TrackerEvent` del sistema de telemetría. El diccionario cubre los siete eventos acordados en la especificación: `Player_Spawn`, `Player_Death`, `AI_Death`, `Shot_Fired`, `Shot_Hit`, `Player_Position_Heartbeat` e `Item_Picked`. Cada clase encapsula exclusivamente los atributos relevantes para su tipo (posición, identificador del killer, zona de impacto, tipo de ítem o nombre del arma), manteniendo los payloads compactos y coherentes con el esquema esperado por la API de ingesta.
 
-```csharp
-[System.Serializable]
-public class Player_Death : TrackerEvent
-{
-    public Player_Death(float x, float z, string killerId) : base()
-    {
-        this.pos_x = x;
-        this.pos_z = z;
-        this.killer_id = killerId;
-    }
-}
-```
+
 
 ##### Captura de eventos del jugador (`PlayerEventHooks.cs`)
 
 Se implementó el script `PlayerEventHooks`, que se adjunta al prefab del jugador y se suscribe a tres eventos del `EventHandler` de Opsive: `OnDeath` para registrar `Player_Death` con posición y killer, `OnRespawn` para registrar `Player_Spawn` con las coordenadas X/Z de reaparición, y `OnItemUseComplete` para registrar `Shot_Fired` con el nombre del arma disparada. Adicionalmente, el script ejecuta una corutina interna que emite un evento `Player_Position_Heartbeat` cada cinco segundos con la posición actual del personaje, permitiendo reconstruir el recorrido del jugador a lo largo de la sesión.
 
-```csharp
-void Start()
-{
-    EventHandler.RegisterEvent<Vector3, Vector3, GameObject>(gameObject, "OnDeath", OnPlayerDeath);
-    EventHandler.RegisterEvent(gameObject, "OnRespawn", OnPlayerRespawn);
-    EventHandler.RegisterEvent<IUsableItem>(gameObject, "OnItemUseComplete", OnShotFired);
-    StartCoroutine(PositionHeartbeat());
-}
 
-private IEnumerator PositionHeartbeat()
-{
-    while (true)
-    {
-        yield return new WaitForSeconds(5f);
-        if (Tracker.Instance.IsReady)
-        {
-            Vector3 pos = transform.position;
-            Tracker.Instance.TrackEvent(new Player_Position_Heartbeat(pos.x, pos.z));
-        }
-    }
-}
-```
 
 ##### Captura de eventos de agentes IA (`AIEventHooks.cs`)
 
 Se implementó el script `AIEventHooks`, que se adjunta al prefab de cada agente enemigo. Se suscribe a `OnDeath` para registrar `AI_Death` con posición y killer, y a `OnHealthDamage` para detectar impactos recibidos. En este último caso, el handler filtra por el tag `Player` en el parámetro `attacker` antes de emitir `Shot_Hit`, evitando registrar daño entre agentes IA. La zona de impacto se infiere del nombre del `Collider` afectado, clasificando el golpe como `Head` o `Body`.
 
-```csharp
-private void OnDamageReceived(float amount, Vector3 pos, Vector3 force,
-                               GameObject attacker, Collider hitCollider)
-{
-    if (!Tracker.Instance.IsReady) return;
-    if (attacker == null) return;
-    if (attacker.CompareTag("Player"))
-    {
-        string zone = hitCollider != null &&
-                      hitCollider.name.ToLower().Contains("head") ? "Head" : "Body";
-        Tracker.Instance.TrackEvent(new Shot_Hit(zone));
-    }
-}
-```
+
 
 ##### Captura de recogida de ítems (`ItemPickupHooks.cs`)
 
 Se implementó el script `ItemPickupHooks`, que se adjunta a cada ítem del mapa y expone un campo configurable `itemType` en el Inspector de Unity. El script se suscribe al evento `OnItemPickup` del propio GameObject del ítem y registra `Item_Picked` únicamente cuando el parámetro `picker` corresponde a un objeto con el tag `Player`, descartando así cualquier interacción de la IA con los objetos del escenario.
 
-```csharp
-public string itemType = "Health"; // "Health", "Weapon" o "Ammo"
 
-private void OnItemPickedUp(GameObject picker)
-{
-    if (!Tracker.Instance.IsReady) return;
-    if (picker != null && picker.CompareTag("Player"))
-    {
-        Tracker.Instance.TrackEvent(new Item_Picked(itemType));
-    }
-}
-```
 
 ##### Resolución de incompatibilidades con el framework de Opsive
 
@@ -512,18 +456,9 @@ Cada router agrupa endpoints temáticamente relacionados y se monta dinámicamen
 
 ##### **B. Configuración Centralizada (`config.py`)**
 
-La gestión de variables de entorno se centraliza mediante `pydantic-settings`, evitando la dispersión de llamadas a `os.getenv()` por el código:
+La gestión de variables de entorno se centraliza mediante `pydantic-settings`, evitando la dispersión de llamadas a `os.getenv()`.
 
-```python
-class Settings(BaseSettings):
-    postgres_url: str = Field(..., alias="POSTGRES_URL")
-    db_pool_size: int = Field(5, alias="DB_POOL_SIZE")
-    cors_origins: list[str] = Field(default=[...], alias="CORS_ORIGINS")
 
-@lru_cache
-def get_settings() -> Settings:
-    return Settings()
-```
 
 El decorador `@lru_cache` garantiza que la instancia se construya una única vez durante el ciclo de vida del proceso, eliminando relecturas innecesarias. La validación tipada de Pydantic detecta errores de configuración en el arranque y no en tiempo de ejecución.
 
@@ -531,16 +466,7 @@ El decorador `@lru_cache` garantiza que la instancia se construya una única vez
 
 La conexión a PostgreSQL utiliza **SQLAlchemy Core** y deliberadamente prescinde del ORM completo. Esta elección responde a tres factores: rendimiento (no se mapean filas a clases Python), explicitud (cada consulta SQL es visible en el código) e inmunidad a inyección (parámetros nombrados separados del texto SQL).
 
-```python
-_engine = create_engine(
-    settings.postgres_url,
-    pool_size=5,
-    max_overflow=10,
-    pool_recycle=1800,
-    pool_pre_ping=True,
-    future=True,
-)
-```
+
 
 Las dos opciones críticas son `pool_pre_ping=True`, que ejecuta un `SELECT 1` antes de entregar cada conexión para detectar las que estén muertas, y `pool_recycle=1800`, que descarta automáticamente conexiones con más de 30 minutos de antigüedad. Ambas resuelven el problema típico de las bases en la nube (Supabase, en este proyecto), donde el proveedor cierra silenciosamente las conexiones inactivas.
 
@@ -559,20 +485,7 @@ Esta dualidad se materializa en dos familias de tablas:
 
 Almacena una fila por jugador con sus estadísticas globales acumuladas a lo largo de toda su historia. Es la fuente directa del endpoint de perfil del Tracker.
 
-```sql
-CREATE TABLE IF NOT EXISTS player_stats (
-    player_id              VARCHAR(64)   PRIMARY KEY,
-    total_kills            INTEGER       NOT NULL DEFAULT 0,
-    total_deaths           INTEGER       NOT NULL DEFAULT 0,
-    kd_ratio               NUMERIC(10,4) NOT NULL DEFAULT 0,
-    avg_accuracy           NUMERIC(5,4)  NOT NULL DEFAULT 0,
-    avg_ttl_seconds        NUMERIC(8,2)  NOT NULL DEFAULT 0,
-    total_sessions         INTEGER       NOT NULL DEFAULT 0,
-    total_playtime_seconds INTEGER       NOT NULL DEFAULT 0,
-    items_picked           INTEGER       NOT NULL DEFAULT 0,
-    last_updated           TIMESTAMPTZ   NOT NULL DEFAULT NOW()
-);
-```
+
 
 El worker actualiza esta tabla mediante `INSERT ... ON CONFLICT (player_id) DO UPDATE`, lo que garantiza que el resultado es el mismo independientemente del número de veces que se reprocese una misma sesión. El índice de la clave primaria es suficiente: todas las consultas filtran por `player_id`.
 
@@ -606,28 +519,7 @@ El índice compuesto `(player_id, started_at DESC)` resulta crítico: los endpoi
 
 ###### **3. Tabla `death_events` — Registro Individual de Muertes**
 
-Cada fila representa una muerte del jugador con sus coordenadas espaciales, su contexto y el TTL asociado (tiempo transcurrido desde el último `Player_Spawn`):
-
-```sql
-CREATE TABLE IF NOT EXISTS death_events (
-    id            BIGSERIAL        PRIMARY KEY,
-    session_id    VARCHAR(64)      NOT NULL,
-    player_id     VARCHAR(64),
-    pos_x         DOUBLE PRECISION NOT NULL,
-    pos_z         DOUBLE PRECISION NOT NULL,
-    floor_id      INTEGER,
-    killer_id     VARCHAR(64),
-    is_ai         BOOLEAN          NOT NULL DEFAULT FALSE,
-    ttl_seconds   NUMERIC(8,2),
-    occurred_at   TIMESTAMPTZ      NOT NULL
-);
-
-CREATE INDEX idx_death_floor   ON death_events (floor_id);
-CREATE INDEX idx_death_session ON death_events (session_id);
-CREATE INDEX idx_death_player  ON death_events (player_id);
-```
-
-Los tres índices secundarios responden a los tres filtros opcionales del endpoint de heatmap (`floor_id`, `session_id`, `player_id`), permitiendo segmentar la nube de calor sin escanear toda la tabla. La columna `ttl_seconds` alimenta el histograma de Time-to-Live; la columna `is_ai` permite distinguir muertes de jugadores reales de muertes de agentes IA.
+Cada fila representa una muerte del jugador con sus coordenadas espaciales, su contexto y el TTL asociado (tiempo transcurrido desde el último `Player_Spawn`), los tres índices secundarios responden a los tres filtros opcionales del endpoint de heatmap (`floor_id`, `session_id`, `player_id`), permitiendo segmentar la nube de calor sin escanear toda la tabla. La columna `ttl_seconds` alimenta el histograma de Time-to-Live; la columna `is_ai` permite distinguir muertes de jugadores reales de muertes de agentes IA.
 
 ###### **4. Tabla `position_events` — Heartbeats de Posición**
 
