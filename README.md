@@ -74,7 +74,7 @@ A través de este sistema, se tienen las siguientes expectativas:
 
 > Repositorio: https://github.com/Adriaaan63/TrabajoFinalUAJ.git
 
-#### 3.1. Implementación del sistema de captura de eventos en el cliente Unity
+#### 3.1. Implementación del sistema de captura de eventos en el cliente Unity <a name="1-implementacion-del-sistema-de-captura-de-eventos-en-el-cliente-unity"></a>
 
 Integrando el *Tracker* de telemetría con el framework Opsive Deathmatch AI Kit mediante el sistema de eventos nativos del motor.
 
@@ -117,7 +117,7 @@ Esto permitió corregir todas las firmas sin modificar código interno de Opsive
 
 ---
 
-#### **3.2. Implementación de la persistencia de Unity a Docker**
+#### **3.2. Implementación de la persistencia de Unity a Docker** <a name="2-implementacion-de-la-persistencia-de-unity-a-docker"></a>
 
 Implementación del subsistema de persistencia desde Unity hacia la infraestructura Docker, así como en la definición del esqueleto de la base de datos y el motor de procesamiento de métricas.
 
@@ -141,7 +141,7 @@ A continuación, se detalla la continuación de la **Sección 3: Diseño e Imple
 
 ---
 
-#### **3.3. Implementación del Motor Analítico y Procesamiento Asíncrono de Métricas (`metrics_worker/worker.py`)**
+#### **3.3. Implementación del Motor Analítico y Procesamiento Asíncrono de Métricas (`metrics_worker/worker.py`)** <a name="3-dise%C3%B1o-e-implementaci%C3%B3n-t%C3%A9cnica-arquitectura-docker"></a>
 
 La tercera capa de la arquitectura corresponde al sistema de procesamiento analítico asíncrono encargado de transformar los eventos crudos almacenados en MongoDB en métricas relacionales estructuradas listas para consumo desde la Query API y el frontend web.
 
@@ -431,7 +431,7 @@ En conjunto, esta capa transforma eventos aislados de gameplay en conocimiento a
 
 ---
 ---
-#### **3.4. Implementación de la Capa de Consulta y Servicio de Datos (`query_api/`)**
+#### **3.4. Implementación de la Capa de Consulta y Servicio de Datos (`query_api/`)** <a name="3-dise%C3%B1o-e-implementaci%C3%B3n-t%C3%A9cnica-arquitectura-docker"></a>
 
 La cuarta capa de la arquitectura corresponde al microservicio de lectura encargado de exponer al mundo exterior los agregados relacionales que el motor analítico ha consolidado en PostgreSQL. Mientras que la Ingest API se especializa en absorber escrituras y el worker se centra en transformar datos crudos en métricas, la Query API adopta un rol exclusivamente de servicio: traduce filas de PostgreSQL en respuestas JSON estructuradas, validadas y autodocumentadas, listas para ser consumidas tanto por el frontend del jugador como por el dashboard interno de investigación.
 
@@ -938,7 +938,7 @@ En conjunto, esta capa transforma la base relacional inerte producida por el wor
 
 --- 
 
-#### **3.5. Implementación de la Capa de Visualización y Análisis Web (Frontend)**
+#### **3.5. Implementación de la Capa de Visualización y Análisis Web (Frontend)** <a name="3-implementacion-de-la-capa-de-visualizacion-y-analisis-web-frontend"></a>
 
 Aquí tienes la reestructuración completa y detallada de la **Sección 3 (Punto 3: Implementación de la Capa de Visualización y Análisis Web)** para tu archivo `README.md`.
 
