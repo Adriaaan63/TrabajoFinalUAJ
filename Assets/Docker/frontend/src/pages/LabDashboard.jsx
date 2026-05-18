@@ -1,53 +1,46 @@
 import { useState, useEffect, useRef } from 'react';
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Target, Package, Crosshair, Map as MapIcon, Loader2 } from 'lucide-react';
+// NUEVO: Añadimos iconos de Skull y Footprints para los botones
+import { Target, Package, Crosshair, Map as MapIcon, Loader2, Skull, Footprints } from 'lucide-react';
 import simpleheat from 'simpleheat';
 import { api } from '../services/api';
 import mapaImagen from '../assets/mapa_base.png';
 
-// =====================================================================
-// CONFIGURACIÓN DEL MAPA (¡Ajusta esto a tu escena de Unity!)
-// =====================================================================
-// Aquí defines los límites reales de tu nivel en coordenadas de Unity.
-// Por ejemplo, si la esquina inferior izquierda de tu mapa en Unity está en X:-50, Z:-50
 const UNITY_MIN_X = -55;
 const UNITY_MAX_X = 55;
 const UNITY_MIN_Z = -52;
 const UNITY_MAX_Z = 52;
 
-// Paleta de colores para el gráfico de tarta (Items)
 const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444'];
 
 export default function LabDashboard() {
   const [loading, setLoading] = useState(true);
   const [summary, setSummary] = useState(null);
   const [itemsData, setItemsData] = useState([]);
-  const [heatmapPoints, setHeatmapPoints] = useState([]);
+  const [deathPoints, setDeathPoints] = useState([]);
+  const [navPoints, setNavPoints] = useState([]);
+  const [heatmapMode, setHeatmapMode] = useState('deaths');
   
-  // Referencia al div donde heatmap.js inyectará su canvas
   const mapContainerRef = useRef(null);
-  // Referencia para guardar la instancia del heatmap y no crear duplicados
-  const heatmapInstanceRef = useRef(null);
 
   useEffect(() => {
-    // Cargar todos los datos del laboratorio en paralelo
     Promise.all([
       api.getGlobalSummary(),
       api.getItemInteractions(),
-      api.getDeathsHeatmap() // Limitado a 5000 por defecto en nuestra API
-    ]).then(([summaryData, itemsResponse, deathsResponse]) => {
+      api.getDeathsHeatmap(), 
+      api.getNavigationHeatmap()
+    ]).then(([summaryData, itemsResponse, deathsResponse, navResponse]) => {
       
       setSummary(summaryData);
       
-      // Formateamos los datos de items para que Recharts los entienda {name, value}
       const formattedItems = itemsResponse.by_item_type.map(item => ({
         name: item.item_type,
         value: item.pickup_count
       }));
       setItemsData(formattedItems);
       
-      // Guardamos los puntos del heatmap (viene en el array .points del schema)
-      setHeatmapPoints(deathsResponse.points || []);
+      setDeathPoints(deathsResponse.points || []);
+      setNavPoints(navResponse.points || []);
       
       setLoading(false);
     }).catch(err => {
@@ -56,30 +49,27 @@ export default function LabDashboard() {
     });
   }, []);
 
-  /// Efecto separado solo para dibujar el heatmap una vez que el canvas existe y hay datos
+  // Efecto para dibujar el heatmap que reacciona cada vez que cambiamos de "Modo"
   useEffect(() => {
-    if (!loading && mapContainerRef.current && heatmapPoints.length > 0) {
+    // Decidimos qué puntos usar según el botón seleccionado
+    const activePoints = heatmapMode === 'deaths' ? deathPoints : navPoints;
+
+    if (!loading && mapContainerRef.current && activePoints.length > 0) {
       const canvas = mapContainerRef.current;
       
-      // CRÍTICO: Igualar la resolución interna del canvas a su tamaño en pantalla
       canvas.width = canvas.clientWidth;
       canvas.height = canvas.clientHeight;
 
-      // 1. Inicializar simpleheat
       const heat = simpleheat(canvas);
-      
-      // Configuración de la "mancha" térmica: radius, blur
       heat.radius(25, 15);
 
-      // 2. Lógica de Conversión Matemática (Unity -> Web)
       const unityWidth = UNITY_MAX_X - UNITY_MIN_X;
       const unityHeight = UNITY_MAX_Z - UNITY_MIN_Z;
 
       const scaleX = canvas.width / unityWidth;
       const scaleZ = canvas.height / unityHeight;
 
-      // 3. Transformamos los puntos. simpleheat espera arrays: [x, y, value]
-      const dataPoints = heatmapPoints.map(point => {
+      const dataPoints = activePoints.map(point => {
         let xWeb = (point.x - UNITY_MIN_X) * scaleX;
         let yWeb = canvas.height - ((point.z - UNITY_MIN_Z) * scaleZ);
 
@@ -90,12 +80,12 @@ export default function LabDashboard() {
         ];
       });
 
-      // 4. Inyectar datos y dibujar
       heat.data(dataPoints);
-      heat.max(5); // Intensidad máxima para que se vuelva rojo
+      //Si es tránsito, la gente pisa mucho los mismos sitios, subimos el umbral rojo
+      heat.max(heatmapMode === 'deaths' ? 5 : 20); 
       heat.draw();
     }
-  }, [loading, heatmapPoints]);
+  }, [loading, heatmapMode, deathPoints, navPoints]); //Añadimos las dependencias correctas
 
   if (loading) {
     return (
@@ -121,9 +111,7 @@ export default function LabDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* COLUMNA IZQUIERDA: Contexto y Validación H4 */}
         <div className="space-y-8 lg:col-span-1">
-          
           {/* Métrica Global */}
           <div className="bg-slate-800/30 border border-slate-700/50 p-6 rounded-xl space-y-4">
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
@@ -143,7 +131,7 @@ export default function LabDashboard() {
             </div>
           </div>
 
-          {/* Gráfico Tarta: Hipótesis 4 (Economía) */}
+          {/* Gráfico Tarta */}
           <div className="bg-slate-800/30 border border-slate-700/50 p-6 rounded-xl space-y-4 h-[400px] flex flex-col">
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
               <Package className="w-5 h-5 text-purple-400" /> Hipótesis 4: Economía
@@ -155,67 +143,66 @@ export default function LabDashboard() {
               {itemsData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie
-                      data={itemsData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={80}
-                      paddingAngle={5}
-                      dataKey="value"
-                    >
+                    <Pie data={itemsData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
                       {itemsData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <RechartsTooltip 
-                      contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', color: '#fff' }} 
-                      itemStyle={{ color: '#fff' }}
-                    />
+                    <RechartsTooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', color: '#fff' }} itemStyle={{ color: '#fff' }}/>
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex items-center justify-center text-slate-500 text-sm italic">
-                  Sin datos de items registrados.
-                </div>
+                <div className="h-full flex items-center justify-center text-slate-500 text-sm italic">Sin datos de items registrados.</div>
               )}
             </div>
           </div>
-
         </div>
 
-        {/* COLUMNA DERECHA: El Heatmap (Validación H2) */}
+        {/* COLUMNA DERECHA: El Heatmap */}
         <div className="lg:col-span-2">
           <div className="bg-slate-800/30 border border-slate-700/50 p-6 rounded-xl h-full flex flex-col">
-            <div className="mb-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <MapIcon className="w-6 h-6 text-rose-500" /> Hipótesis 2: Zonas de Conflicto (Heatmap)
-              </h2>
-              <p className="text-sm text-slate-400 mt-1">
-                Visualización de mortalidad. Las zonas rojas indican cuellos de botella (Choke points) empíricos.
-                Se muestran {heatmapPoints.length} eventos de muerte.
-              </p>
+            
+            {/* NUEVO: Cabecera con Botones de Selección */}
+            <div className="mb-4 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <MapIcon className="w-6 h-6 text-rose-500" /> Hipótesis 2: Análisis Espacial
+                </h2>
+                <p className="text-sm text-slate-400 mt-1">
+                  {heatmapMode === 'deaths' 
+                    ? `Zonas de Conflicto (Mortalidad). Se muestran ${deathPoints.length} eventos.`
+                    : `Zonas de Navegación (Tránsito). Se muestran ${navPoints.length} eventos.`}
+                </p>
+              </div>
+
+              {/* Botones Toggle */}
+              <div className="flex bg-slate-900 rounded-lg p-1 border border-slate-700">
+                <button
+                  onClick={() => setHeatmapMode('deaths')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-bold transition-all ${
+                    heatmapMode === 'deaths' ? 'bg-rose-500/20 text-rose-400' : 'text-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  <Skull className="w-4 h-4" /> Bajas
+                </button>
+                <button
+                  onClick={() => setHeatmapMode('navigation')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-bold transition-all ${
+                    heatmapMode === 'navigation' ? 'bg-cyan-500/20 text-cyan-400' : 'text-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  <Footprints className="w-4 h-4" /> Tránsito
+                </button>
+              </div>
             </div>
 
-            {/* CONTENEDOR DEL MAPA */}
-            {/* Aspect ratio 1:1 (cuadrado) o ajusta según las proporciones reales de tu mapa */}
             <div className="relative w-full aspect-square bg-slate-900 border-2 border-slate-800 rounded-lg overflow-hidden shadow-2xl">
-              
-              {/* Imagen de fondo del mapa de Unity */}
-              <img 
-                src={mapaImagen}
-                alt="Mapa del Nivel" 
-                className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity"
-              />
-              
-              {/* Canvas nativo donde simpleheat pintará los datos */}
-              <canvas 
-                ref={mapContainerRef} 
-                className="absolute inset-0 w-full h-full z-10"
-              />
-              
+              <img src={mapaImagen} alt="Mapa del Nivel" className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity"/>
+              {/* Le damos una key al canvas para forzar a React a recrearlo limpio al cambiar de modo */}
+              <canvas key={heatmapMode} ref={mapContainerRef} className="absolute inset-0 w-full h-full z-10"/>
             </div>
+            
           </div>
         </div>
 
