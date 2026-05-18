@@ -96,9 +96,9 @@ Se implementó el script `ItemPickupHooks`, que se adjunta a cada ítem del mapa
 
 Durante la integración se identificaron y resolvieron varias incompatibilidades entre la documentación del kit y su versión instalada. El `EventHandler` se encontraba bajo el namespace `Opsive.Shared.Events` y no bajo `Opsive.UltimateCharacterController.Events`. El evento `OnDeath` requería una firma `InvokableAction<Vector3, Vector3, GameObject>` en lugar de una `Action` simple, causando excepción en tiempo de ejecución con la firma incorrecta. El evento de daño recibido se denominaba `OnHealthDamage` en lugar de `OnHealthDamageReceived`. Finalmente, el evento de disparo `OnItemUseComplete` esperaba un parámetro de tipo `IUsableItem` en lugar de `System.Object`. Cada incompatibilidad se diagnosticó mediante scripts de detección temporal que registraban en consola los eventos y tipos reales lanzados por el framework, permitiendo corregir las firmas sin modificar código interno de Opsive.
 
-* **Sergio Pérez Robledano**
+* **2 Implementación de la persistencia de Unity a Docker**
 
-La contribución de Sergio se centró en el diseño e implementación del subsistema de persistencia desde Unity hacia la infraestructura Docker, así como en la definición del esqueleto de la base de datos y el motor de procesamiento de métricas.
+Implementación del subsistema de persistencia desde Unity hacia la infraestructura Docker, así como en la definición del esqueleto de la base de datos y el motor de procesamiento de métricas.
 
 **Capa de persistencia en Unity (`DockerPersistence.cs`)**
 
