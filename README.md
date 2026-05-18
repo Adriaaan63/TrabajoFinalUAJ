@@ -84,10 +84,6 @@ Se diseñaron e implementaron todas las clases de evento de gameplay del proyect
 [System.Serializable]
 public class Player_Death : TrackerEvent
 {
-    public float pos_x;
-    public float pos_z;
-    public string killer_id;
-
     public Player_Death(float x, float z, string killerId) : base()
     {
         this.pos_x = x;
@@ -165,7 +161,7 @@ private void OnItemPickedUp(GameObject picker)
 Durante la integración se identificaron y resolvieron varias incompatibilidades entre la documentación del kit y su versión instalada. El `EventHandler` se encontraba bajo el namespace `Opsive.Shared.Events` y no bajo `Opsive.UltimateCharacterController.Events`. El evento `OnDeath` requería una firma `InvokableAction<Vector3, Vector3, GameObject>` en lugar de una `Action` simple, causando excepción en tiempo de ejecución con la firma incorrecta. El evento de daño recibido se denominaba `OnHealthDamage` en lugar de `OnHealthDamageReceived`. Finalmente, el evento de disparo `OnItemUseComplete` esperaba un parámetro de tipo `IUsableItem` en lugar de `System.Object`. Cada incompatibilidad se diagnosticó mediante un script de detección temporal que registraba en consola los eventos y tipos reales lanzados por el framework:
 
 ```csharp
-// Script de diagnóstico temporal usado durante la integración
+// Script de diagnostico temporal usado durante la integracion
 EventHandler.RegisterEvent<float, Vector3, Vector3, GameObject, Collider>(
     gameObject, eventName, (a, b, c, d, f) =>
         Debug.Log($"[EVENTO DETECTADO] '{eventName}' | atacante: {d?.name} | tag: {d?.tag}"));
