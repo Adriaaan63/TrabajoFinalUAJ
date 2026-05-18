@@ -815,7 +815,7 @@ El primer gran resultado del ecosistema es la validación de la **Hipótesis 3 (
 Al inspeccionar el perfil del jugador "Paco", el sistema extrae de PostgreSQL sus métricas consolidadas a lo largo de sus sesiones de combate, reflejando su ratio de bajas/muertes (K/D, M3.1) y su tasa de acierto físico de disparos (Precisión, M3.2).
 
 > **Interfaz de Usuario: Panel de Telemetría Personal (Jugador: paco)**
-> ![Perfil de Telemetría de Paco](Assets/Docker/frontend/ImagenesWeb/PlayerTrack.png)
+> <img src="Assets/Docker/frontend/ImagenesWeb/PlayerTrack.png" width="50%">
 
 **Hallazgos Analíticos:**
 * **Evolución de la curva de aprendizaje (M3.1 y M3.2):** Como se aprecia en la gráfica cartesiana dual, en las primeras tres sesiones del historial ("Partida 1" a "Partida 3"), el jugador registra un ratio K/D inferior a `0.60` y una precisión que apenas roza el `15%`. Este rendimiento inicial deficiente correlaciona con la fase de aclimatación al esquema de control de Opsive.
@@ -832,13 +832,13 @@ El núcleo de la investigación orientada a *Game Designers* reside en la resolu
 Este mapa de calor registra las coordenadas exactas $(X, Z)$ donde ocurren los eventos de muerte, incluyendo tanto las eliminaciones sufridas por el jugador humano como las bajas infligidas a los agentes de Inteligencia Artificial de Opsive (parámetro `includeAi=true` activado de forma nativa por el frontend).
 
 > **Laboratorio de Hipótesis: Mapa Térmico de Mortalidad (M2.2)**
-> ![Heatmap de Mortalidad Global](Assets/Docker/frontend/ImagenesWeb/Lab.png) 
+> <img src="Assets/Docker/frontend/ImagenesWeb/Lab.png" width="50%">
 
 ##### **B. Distribución Espacial de Navegación (M2.1 - Modo Tránsito)**
 Este mapa de calor procesa las coordenadas de posición emitidas automáticamente por la corutina del cliente cada 5 segundos de juego vivo (`Player_Position_Heartbeat`), permitiendo mapear el flujo de movimiento e itinerarios preferidos por los usuarios.
 
 > **Laboratorio de Hipótesis: Mapa Térmico de Navegación y Tránsito (M2.1)**
-> ![Heatmap de Navegación de Usuarios](Assets/Docker/frontend/ImagenesWeb/Transito.png)
+> <img src="Assets/Docker/frontend/ImagenesWeb/Transito.png" width="50%">
 
 **Hallazgos Analíticos y Cruce de Datos:**
 * **Validación de H2 (Cuellos de Botella):** Al contrastar ambos mapas, se observa un fenómeno de divergencia espacial crítico. El mapa térmico de navegación (Tránsito) revela que los jugadores novatos se desplazan de forma masiva por los pasillos periféricos y zonas exteriores del nivel buscando la cobertura de las paredes estructurales. Sin embargo, el mapa térmico de mortalidad (Bajas) revela que el `80%` de las muertes se concentran en tres puntos geográficos específicos: las puertas de acceso central y las intersecciones de pasillos internos (*choke points*). Esto **convalida la Hipótesis 2**: los jugadores buscan rutas periféricas seguras debido al miedo al combate, pero el diseño de interconexión central del nivel los fuerza a atravesar embudos de alta letalidad que actúan como cuellos de botella imprevistos.
@@ -906,5 +906,3 @@ De acuerdo con las directrices éticas y académicas establecidas en el enunciad
   * **Detalle:** Desarrollo de la SPA en React + Vite, enrutamiento local con React Router, gráficas dinámicas cartesianas de eje dual en Recharts y el lienzo interactivo de mapas de calor duales mediante `simpleheat`.
 
 ---
-
-> **Compromiso de Coautoría:** > Todos los miembros firmantes han participado activamente tanto en el despliegue de la infraestructura de software como en la validación analítica de las hipótesis del proyecto, reflejando de forma fidedigna sus aportaciones en el historial de commits del repositorio centralizado.
