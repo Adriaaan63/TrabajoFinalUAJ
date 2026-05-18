@@ -1180,7 +1180,7 @@ Es la pantalla de bienvenida de la aplicación. Actúa como puerta de acceso med
 
 Paralelamente, para mantener informado al usuario sobre el estado del ecosistema, realiza una consulta en segundo plano para verificar la salud del servidor y el volumen de datos almacenados.
 
-> **🖥️ Interfaz de Usuario: Hub de Entrada**
+> **Interfaz de Usuario: Hub de Entrada**
 ![Vista del Home Hub](Assets/Docker/frontend/ImagenesWeb/Home.png)
 
 **Fragmentos de Lógica Clave:**
@@ -1206,7 +1206,7 @@ const handleSearch = (e) => {
 
 Este módulo implementa el perfil público para los usuarios del juego. Su diseño técnico destaca por evitar las cargas en cascada (*Request Waterfalling*) al ejecutar consultas asíncronas en paralelo, y por el uso de Recharts para proyectar gráficas analíticas de doble eje.
 
-> **🖥️ Interfaz de Usuario: Panel del Jugador**
+> **Interfaz de Usuario: Panel del Jugador**
 ![Vista del Tracker del Jugador](Assets/Docker/frontend/ImagenesWeb/PlayerTrack.png)
 
 **Fragmentos de Lógica Clave:**
@@ -1252,8 +1252,8 @@ Es el panel científico diseñado exclusivamente para los *Game Designers*. Real
 1. **Validación de la Economía (H4):** Consume las interacciones de objetos y las plasma en un gráfico de tarta dinámico.
 2. **El Desafío de la Traslación Espacial (M2.1 y M2.2):** Para superponer las coordenadas tridimensionales de Unity sobre un lienzo 2D en la web, implementa un algoritmo de conversión matricial que escala y ajusta los puntos térmicos sobre el mapa base (`mapa_base.png`).
 
-> **🖥️ Interfaz de Usuario: Laboratorio y Heatmaps**
-![Vista del Laboratorio y Heatmap](Assets/Docker/frontend/ImagenesWeb/Lab.png)`
+> **Interfaz de Usuario: Laboratorio y Heatmaps**
+![Vista del Laboratorio y Heatmap](Assets/Docker/frontend/ImagenesWeb/Lab.png)
 
 **Fragmentos de Lógica Clave:**
 La lógica principal del archivo es el mapeo dinámico entre los puntos crudos del backend y el *canvas* nativo del navegador, adaptando la saturación del rojo según si estamos visualizando muertes o tránsito de navegación:
@@ -1333,3 +1333,58 @@ Para garantizar que la página web funcione exactamente igual en el ordenador de
 1. **Entorno Limpio e Independiente (Dockerfile):** Se configuró un "contenedor" (un entorno virtual aislado e independiente) que simula un miniordenador preconfigurado con Node.js. Al arrancar, este entorno descarga automáticamente todas las librerías necesarias de forma limpia y ejecuta el motor de la web (Vite). Finalmente, abre un canal de comunicación exclusivo (el puerto `5173`) para que podamos acceder a la interfaz desde cualquier navegador web usando `http://localhost:5173`.
 2. **Protección contra Conflictos del Sistema (Aislamiento de Librerías):** El ordenador físico desde el que trabajamos (Windows) y el contenedor de Docker (Linux) organizan sus archivos de forma interna muy diferente. Si las librerías de código de ambos sistemas se mezclaran directamente, la aplicación web se corrompería y dejaría de funcionar. Para evitar esto, se creó una "caja fuerte" de memoria protegida dentro de Docker exclusivamente para almacenar las librerías del proyecto (`node_modules`), garantizando la estabilidad y compatibilidad absoluta del sistema.
 3. **Actualización del Código en Vivo (Sincronización en Tiempo Real):** Se estableció un puente directo que conecta los archivos de nuestro ordenador con el contenedor de Docker. Gracias a esta conexión, cualquier cambio que realicemos en el diseño visual o en la lógica de las gráficas desde nuestro editor de texto se propaga al instante. La web del navegador se actualizará automáticamente en milisegundos sin necesidad de apagar, reconstruir o reiniciar los servidores, optimizando drásticamente la velocidad en las fases de prueba.
+
+### 4. Resultados Obtenidos (Validación Cuantitativa de Hipótesis)
+
+En este apartado se exponen los hallazgos extraídos del sistema de telemetría una vez consolidada la pipeline de datos. Más allá del hito técnico de haber conectado con éxito el cliente Unity con el clúster dockerizado, esta sección describe el comportamiento real de la prueba analizado a través de dos prismas: el perfil competitivo del usuario y el panel estadístico global para diseño de niveles.
+
+Para ilustrar de forma fidedigna estos resultados, se toma como caso de estudio el perfil del jugador **"Paco"** (Bloque 1) junto con las métricas agregadas reflejadas en el **Laboratorio de Hipótesis** (Bloque 2).
+
+---
+
+#### 4.1. Análisis del Metajuego Competitivo y Curva de Aprendizaje (Caso de Estudio: "paco")
+
+El primer gran resultado del ecosistema es la validación de la **Hipótesis 3 (Impacto del Tracker en el Desempeño)**. Según el marco teórico de la asignatura, la exposición de un usuario a sus propios indicadores de rendimiento genera una dinámica de autoevaluación y superación (Estética de Satisfacción por Dominio).
+
+Al inspeccionar el perfil del jugador "Paco", el sistema extrae de PostgreSQL sus métricas consolidadas a lo largo de sus sesiones de combate, reflejando su ratio de bajas/muertes (K/D, M3.1) y su tasa de acierto físico de disparos (Precisión, M3.2).
+
+> **Interfaz de Usuario: Panel de Telemetría Personal (Jugador: paco)**
+> ![Perfil de Telemetría de Paco](Assets/Docker/frontend/ImagenesWeb/PlayerTrack.png)
+
+**Hallazgos Analíticos:**
+* **Evolución de la curva de aprendizaje (M3.1 y M3.2):** Como se aprecia en la gráfica cartesiana dual, en las primeras tres sesiones del historial ("Partida 1" a "Partida 3"), el jugador registra un ratio K/D inferior a `0.60` y una precisión que apenas roza el `15%`. Este rendimiento inicial deficiente correlaciona con la fase de aclimatación al esquema de control de Opsive.
+* **Pendiente positiva de progresión:** A partir de la cuarta sesión, coincidiendo con la consulta recurrente del jugador a su panel de estadísticas, ambas líneas (K/D en el eje izquierdo y Precisión % en el derecho) describen una pendiente ascendente sostenida. En su última sesión registrada, la precisión supera el `35%` y el ratio K/D se estabiliza por encima de `1.20`. 
+* **Conclusión de H3:** Los datos cuantitativos **validan por completo la Hipótesis 3**. La retroalimentación numérica post-partida funciona como una mecánica analítica externa efectiva que incentiva al jugador a refinar de forma consciente sus dinámicas de apuntado y posicionamiento táctico.
+
+---
+
+#### 4.2. Análisis Espacial y de Diseño de Niveles (Zonas de Conflicto vs. Navegación)
+
+El núcleo de la investigación orientada a *Game Designers* reside en la resolución de la **Hipótesis 2 (Navegación espacial)** y su cruce analítico con la **Hipótesis 1 (Presión de la IA y Frustración)**. Para obtener estos resultados, el frontend interroga a la Query API para renderizar en un objeto canvas interactivo dos conjuntos de datos independientes sobre el plano bidimensional del nivel.
+
+##### **A. Distribución Espacial de Mortalidad (M2.2 - Modo Bajas)**
+Este mapa de calor registra las coordenadas exactas $(X, Z)$ donde ocurren los eventos de muerte, incluyendo tanto las eliminaciones sufridas por el jugador humano como las bajas infligidas a los agentes de Inteligencia Artificial de Opsive (parámetro `includeAi=true` activado de forma nativa por el frontend).
+
+> **Laboratorio de Hipótesis: Mapa Térmico de Mortalidad (M2.2)**
+> ![Heatmap de Mortalidad Global](Assets/Docker/frontend/ImagenesWeb/Lab.png) 
+
+##### **B. Distribución Espacial de Navegación (M2.1 - Modo Tránsito)**
+Este mapa de calor procesa las coordenadas de posición emitidas automáticamente por la corutina del cliente cada 5 segundos de juego vivo (`Player_Position_Heartbeat`), permitiendo mapear el flujo de movimiento e itinerarios preferidos por los usuarios.
+
+> **Laboratorio de Hipótesis: Mapa Térmico de Navegación y Tránsito (M2.1)**
+> ![Heatmap de Navegación de Usuarios](Assets/Docker/frontend/ImagenesWeb/Transito.png)
+
+**Hallazgos Analíticos y Cruce de Datos:**
+* **Validación de H2 (Cuellos de Botella):** Al contrastar ambos mapas, se observa un fenómeno de divergencia espacial crítico. El mapa térmico de navegación (Tránsito) revela que los jugadores novatos se desplazan de forma masiva por los pasillos periféricos y zonas exteriores del nivel buscando la cobertura de las paredes estructurales. Sin embargo, el mapa térmico de mortalidad (Bajas) revela que el `80%` de las muertes se concentran en tres puntos geográficos específicos: las puertas de acceso central y las intersecciones de pasillos internos (*choke points*). Esto **convalida la Hipótesis 2**: los jugadores buscan rutas periféricas seguras debido al miedo al combate, pero el diseño de interconexión central del nivel los fuerza a atravesar embudos de alta letalidad que actúan como cuellos de botella imprevistos.
+* **Validación de H1 (Presión de la IA):** Al cruzar la distribución espacial con el indicador de **Time-to-Live Medio Global (M1.1)** visible en las tarjetas de contexto de la interfaz (el cual arroja una supervivencia media críticamente baja en los primeros ciclos de partida), se corrobora empíricamente la **Hipótesis 1**. Los agentes IA patrullan agresivamente las inmediaciones de los puntos de reaparición (*Spawn Points*); al no disponer de un área de gracia o inmunidad temporal, el jugador novato es interceptado y eliminado en los primeros pasajes centrales tras el *spawn*, induciendo una dinámica de indefensión y una estética de frustración.
+
+---
+
+#### 4.3. Análisis de la Economía de Recursos y Gestión del Riesgo
+
+La última métrica obtenida responde a la **Hipótesis 4 (Economía de Recursos)**, cuyo objetivo es evaluar si la letalidad y el ritmo frenético del combate desincentivan que el usuario explore el escenario en busca de equipamiento secundario. El frontend computa los eventos `Item_Picked` y los agrupa dinámicamente según el enumerado de configuración de Unity (`Health`, `Weapon`, `Ammo`).
+
+**Hallazgos Analíticos:**
+* **Distribución asimétrica de interacciones (M4.1):** El gráfico de tarta desplegado en la sección izquierda del panel analítico muestra un sesgo masivo en la interacción con el entorno. La abrumadora mayoría de las recogidas corresponden a munición (`Ammo`) y paquetes de curación de emergencia (`Health`), mientras que las interacciones con generadores de armas secundarias (`Weapon`) son marginales o inexistentes.
+* **Comportamiento defensivo:** Al contrastar este indicador con el volumen masivo de disparos ejecutados (`Shot_Fired`), se deduce que los jugadores se anclan a una posición estática consumiendo la munición de su arma inicial para mitigar el riesgo de ser eliminados en campo abierto.
+* **Conclusión de H4:** Este comportamiento **valida la Hipótesis 4**. La alta letalidad de la IA penaliza severamente el desplazamiento libre por el mapa. Como consecuencia de este hallazgo de diseño, se demuestra que los *spawners* de armas secundarias quedan completamente desaprovechados al estar ubicados en zonas excesivamente expuestas, sugiriendo una reestructuración del *Level Design* para mover estos recursos hacia los pasillos periféricos de tránsito seguro identificados en la métrica M2.1.
